@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ChatApp/src/loginPage.dart';
-import 'package:ChatApp/src/signup.dart';
+import 'package:ChatApp/src/Account/loginPage.dart';
+import 'package:ChatApp/src/Account/signup.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class WelcomePage extends StatefulWidget {
