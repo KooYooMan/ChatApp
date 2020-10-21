@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:ChatApp/src/Account/Widget/bezierContainer.dart';
-import 'package:ChatApp/src/Account/loginPage.dart';
+import 'package:ChatApp/src/screens/auth_screens/widgets/bezier_container.dart';
+import 'package:ChatApp/src/screens/auth_screens/login_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class SignUpPage extends StatefulWidget {
-  SignUpPage({Key key, this.title}) : super(key: key);
+class SignUpScreen extends StatefulWidget {
+  SignUpScreen({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _SignUpScreenState extends State<SignUpScreen> {
   Widget _backButton() {
     return InkWell(
       onTap: () {
@@ -87,7 +87,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginPage()));
+            context, MaterialPageRoute(builder: (context) => LoginScreen()));
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 20),

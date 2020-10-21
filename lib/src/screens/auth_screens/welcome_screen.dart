@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:ChatApp/src/Account/loginPage.dart';
-import 'package:ChatApp/src/Account/signup.dart';
+import 'package:ChatApp/src/screens/auth_screens/login_screen.dart';
+import 'package:ChatApp/src/screens/auth_screens/signup_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class WelcomePage extends StatefulWidget {
-  WelcomePage({Key key, this.title}) : super(key: key);
+class WelcomeScreen extends StatefulWidget {
+  WelcomeScreen({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _WelcomePageState createState() => _WelcomePageState();
+  _WelcomeScreenState createState() => _WelcomeScreenState();
 }
 
-class _WelcomePageState extends State<WelcomePage> {
+class _WelcomeScreenState extends State<WelcomeScreen> {
   Widget _submitButton() {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginPage()));
+            context, MaterialPageRoute(builder: (context) => LoginScreen()));
       },
       child: Container(
         width: MediaQuery.of(context).size.width,
@@ -45,7 +45,7 @@ class _WelcomePageState extends State<WelcomePage> {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => SignUpPage()));
+            context, MaterialPageRoute(builder: (context) => SignUpScreen()));
       },
       child: Container(
         width: MediaQuery.of(context).size.width,

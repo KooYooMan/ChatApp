@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'src/Account/welcomePage.dart';
+import 'package:ChatApp/src/screens/auth_screens/welcome_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: WelcomePage(),
+      home: WelcomeScreen(),
     );
   }
 }
