@@ -1,11 +1,14 @@
+import 'package:ChatApp/src/screens/conversation_screens/conversation_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:ChatApp/src/screens/main_screen/MainScreen.dart';
+import 'package:ChatApp/src/screens/main_screen/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Firebase.initializeApp();
   runApp(MyApp());
+
+
 }
 
 class MyApp extends StatelessWidget {

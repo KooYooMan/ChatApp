@@ -1,12 +1,12 @@
-import 'package:ChatApp/src/screens/main_screen/NewConversation.dart';
-import 'package:ChatApp/src/screens/main_screen/Info.dart';
-import 'package:ChatApp/src/screens/main_screen/widgets/CatogorySelect.dart';
-import 'package:ChatApp/src/screens/main_screen/widgets/FavoriteContacts.dart';
-import 'package:ChatApp/src/screens/main_screen/widgets/OnlineList.dart';
-import 'package:ChatApp/src/screens/main_screen/widgets/RecentlyChat.dart';
+import 'package:ChatApp/src/screens/main_screen/new_conversation.dart';
+import 'package:ChatApp/src/screens/main_screen/info.dart';
+import 'package:ChatApp/src/screens/main_screen/widgets/category_select.dart';
+import 'package:ChatApp/src/screens/main_screen/widgets/favorite_contacts.dart';
+import 'package:ChatApp/src/screens/main_screen/widgets/online_list.dart';
+import 'package:ChatApp/src/screens/main_screen/widgets/recently_chat.dart';
 import 'package:flutter/material.dart';
 
-import 'widgets/CustomSearchDelegate.dart';
+import 'widgets/custom_search_delegate.dart';
 
 class MainScreen extends StatefulWidget {
   @override

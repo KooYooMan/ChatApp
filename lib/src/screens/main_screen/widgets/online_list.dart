@@ -1,5 +1,5 @@
 import 'package:ChatApp/src/models/user/user.dart';
-import 'package:ChatApp/src/screens/fake_data/fake_users.dart';
+import 'package:ChatApp/src/screens/fake_data/fake_database.dart';
 import 'package:flutter/material.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 
@@ -9,7 +9,7 @@ class OnlineList extends StatefulWidget {
 }
 
 class _OnlineListState extends State<OnlineList> {
-  List<User> onlineList = favorites;
+  List<User> onlineList = fakeDatabase.getFavorites();
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class _OnlineListState extends State<OnlineList> {
                       children: <Widget>[
                         CircleAvatar(
                           radius: 35.0,
-                          backgroundImage: AssetImage(onlineList[index].avatar),
+                          backgroundImage: onlineList[index].avatarProvider,
                         ),
                         SizedBox(width: 10.0),
                         Column(

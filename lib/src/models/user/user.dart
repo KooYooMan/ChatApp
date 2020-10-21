@@ -1,6 +1,13 @@
+import 'package:flutter/material.dart';
+
 class User {
-  String id;
+  String uid;
   String displayName;
-  String avatar;
-  User({this.id, this.displayName, this.avatar});
+  ImageProvider avatarProvider;
+  User(String uid, String displayName, ImageProvider avatarProvider) {
+    this.uid = uid;
+    this.displayName = displayName;
+    this.avatarProvider = avatarProvider;
+  }
+
 }

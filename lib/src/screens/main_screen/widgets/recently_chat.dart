@@ -1,8 +1,11 @@
+import 'package:ChatApp/src/models/conversation/conversation.dart';
+import 'package:ChatApp/src/screens/conversation_screens/conversation_screen.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:ChatApp/src/screens/fake_data/fake_messages.dart';
-import 'package:ChatApp/src/models/message/message.dart';
+import 'package:intl/intl.dart';
 
+import 'package:ChatApp/src/models/message/message.dart';
+import 'package:ChatApp/src/screens/fake_data/fake_database.dart';
 class RecentChats extends StatefulWidget {
   @override
   _RecentChatsState createState() => _RecentChatsState();
@@ -10,6 +13,7 @@ class RecentChats extends StatefulWidget {
 
 class _RecentChatsState extends State<RecentChats> {
   Stream<List<Message>> _stream = (() async* {
+    List<Message> chats = fakeDatabase.getRecentlyMessages();
     List<List<Message>> listRecentlyChats = [];
 
     List<Message> recentlyChats0 = List<Message>();
@@ -94,11 +98,12 @@ class _RecentChatsState extends State<RecentChats> {
                         itemCount: snapshot.data.length,
                         itemBuilder: (BuildContext context, int index) {
                           final Message chat = snapshot.data[index];
+                          final Conversation conversation = fakeDatabase.getConversationByCid(chat.cid);
                           return GestureDetector(
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => Text("Hello World!"),
+                                builder: (_) => fakeConversationScreen(conversation.cid),
                               ),
                             ),
                             child: Container(
@@ -123,8 +128,7 @@ class _RecentChatsState extends State<RecentChats> {
                                         children: [
                                           CircleAvatar(
                                             radius: 25.0,
-                                            backgroundImage: AssetImage(
-                                                './assets/images/avatar.jpg'),
+                                            backgroundImage: conversation.avatarProvider,
                                           ),
                                           Positioned(
                                               right: 0.0,
@@ -151,7 +155,7 @@ class _RecentChatsState extends State<RecentChats> {
                                             CrossAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
-                                            "Manh Cao",
+                                            conversation.displayName,
                                             style: TextStyle(
                                               color: Colors.grey,
                                               fontSize: 15.0,
@@ -183,7 +187,7 @@ class _RecentChatsState extends State<RecentChats> {
                                   Column(
                                     children: <Widget>[
                                       Text(
-                                        chat.time,
+                                        DateFormat('hh:mm a').format(chat.sentTime),
                                         style: TextStyle(
                                           color: Colors.grey,
                                           fontSize: 15.0,

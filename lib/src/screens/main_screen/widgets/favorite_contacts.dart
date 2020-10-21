@@ -1,5 +1,5 @@
 import 'package:ChatApp/src/models/user/user.dart';
-import 'package:ChatApp/src/screens/fake_data/fake_users.dart';
+import 'package:ChatApp/src/screens/fake_data/fake_database.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 
@@ -10,6 +10,7 @@ class FavoriteContacts extends StatefulWidget {
 
 class _FavoriteContactsState extends State<FavoriteContacts> {
   Stream<List<User>> _stream = (() async* {
+    List<User> favorites = fakeDatabase.getFavorites();
     List<List<User>> listRecentlyChats = [];
 
     List<User> recentlyChats0 = List<User>();
@@ -97,8 +98,7 @@ class _FavoriteContactsState extends State<FavoriteContacts> {
                                         children: [
                                           CircleAvatar(
                                             radius: 25.0,
-                                            backgroundImage: AssetImage(
-                                                snapshot.data[index].avatar),
+                                            backgroundImage: snapshot.data[index].avatarProvider,
                                           ),
                                           Positioned(
                                               right: 0.0,

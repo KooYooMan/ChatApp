@@ -1,8 +1,10 @@
 import 'package:ChatApp/src/models/user/user.dart';
-import 'package:ChatApp/src/screens/fake_data/fake_users.dart';
+import 'package:ChatApp/src/screens/fake_data/fake_database.dart';
 import 'package:flutter/material.dart';
 
 class CustomSearchDelegate extends SearchDelegate {
+  final List<User> listSearch = fakeDatabase.getFavorites();
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return [
@@ -18,7 +20,7 @@ class CustomSearchDelegate extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: Icon(Icons.arrow_back_rounded),
       onPressed: () {
         close(context, null);
       },
@@ -36,7 +38,6 @@ class CustomSearchDelegate extends SearchDelegate {
     );
   }
 
-  final List<User> listSearch = favorites;
 
   @override
   Widget buildSuggestions(BuildContext context) {
@@ -66,7 +67,7 @@ class CustomSearchDelegate extends SearchDelegate {
               children: <Widget>[
                 CircleAvatar(
                   radius: 35.0,
-                  backgroundImage: AssetImage(suggestionList[index].avatar),
+                  backgroundImage: suggestionList[index].avatarProvider
                 ),
                 SizedBox(width: 10.0),
                 Column(

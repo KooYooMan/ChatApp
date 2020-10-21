@@ -42,7 +42,7 @@ class Info extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back_rounded),
             onPressed: () => Navigator.pop(context),
           ),
           title: Text('Profile'),

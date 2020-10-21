@@ -1,5 +1,5 @@
 import 'package:ChatApp/src/models/user/user.dart';
-import 'package:ChatApp/src/screens/fake_data/fake_users.dart';
+import 'package:ChatApp/src/screens/fake_data/fake_database.dart';
 import 'package:flutter/material.dart';
 
 class NewConversation extends StatefulWidget {
@@ -10,6 +10,7 @@ class NewConversation extends StatefulWidget {
 }
 
 class _NewConversation extends State<NewConversation> {
+  List<User> favorites = fakeDatabase.getFavorites();
   List<User> userList = List<User>();
   TextEditingController _controller;
   List<User> renderList = List<User>();
@@ -53,7 +54,7 @@ class _NewConversation extends State<NewConversation> {
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back_rounded),
             onPressed: () => Navigator.pop(context),
           ),
           title: Text('New conversation'),
@@ -113,8 +114,7 @@ class _NewConversation extends State<NewConversation> {
                                 children: [
                                   CircleAvatar(
                                     radius: 25.0,
-                                    backgroundImage:
-                                        AssetImage(curList[index].avatar),
+                                    backgroundImage: curList[index].avatarProvider,
                                   ),
                                 ],
                               ),
