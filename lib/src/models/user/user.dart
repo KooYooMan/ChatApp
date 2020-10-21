@@ -2,5 +2,9 @@ class User {
   String id;
   String displayName;
   String avatar;
-  User({this.id, this.displayName, this.avatar});
+  User(String id, String displayName, String avatar) {
+    this.id = id;
+    this.displayName = displayName;
+    this.avatar = avatar;
+  }
 }
