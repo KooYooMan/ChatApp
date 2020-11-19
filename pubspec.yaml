@@ -35,6 +35,13 @@ dependencies:
   dots_indicator: ^1.2.0
   implicitly_animated_reorderable_list: ^0.3.2
   lorem_ipsum: ^0.0.1
+  file_picker: ^1.4.0+1
+  emoji_picker: ^0.0.2
+  video_player: ^0.10.2+1
+  image_picker: ^0.6.6+5
+  flutter_downloader: ^1.2.2
+  downloads_path_provider: ^0.1.0
+  flushbar: ^1.9.0
   keyboard_visibility: ^0.5.6
 
 

@@ -1,6 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-import 'content.dart';
+enum MessageType {
+  text,
+  document,
+  image,
+  audio,
+}
 
 class Message {
   String mid;
@@ -8,16 +13,23 @@ class Message {
   String cid;
   String userDisplayName;
   ImageProvider avatarProvider;
-  Content content;
   DateTime sentTime;
   bool seen;
-  Message(String uid, String cid, String userDisplayName, ImageProvider avatarProvider, DateTime sentTime, Content content, bool seen) {
+  MessageType type;
+
+  Message(String uid, String cid, String userDisplayName, ImageProvider avatarProvider, DateTime sentTime, bool seen, MessageType messageType) {
     this.uid = uid;
     this.cid = cid;
     this.userDisplayName = userDisplayName;
     this.avatarProvider = avatarProvider;
     this.sentTime = sentTime;
-    this.content = content;
     this.seen = seen;
+    this.type = messageType;
+    print("type = " + this.type.toString());
+  }
+  String getContent() {
+    return "";
   }
 }
+
+

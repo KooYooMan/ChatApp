@@ -168,7 +168,7 @@ class _RecentChatsState extends State<RecentChats> {
                                                     .size
                                                     .width *
                                                 0.45,
-                                            child: Text(chat.content.text,
+                                            child: Text(chat.getContent() ,
                                                 style: TextStyle(
                                                   color: Colors.blueGrey,
                                                   fontSize:

@@ -1,3 +1,5 @@
+import 'package:ChatApp/src/models/message/document_message.dart';
+import 'package:ChatApp/src/models/message/image_message.dart';
 import 'package:flutter/material.dart';
 import 'package:ChatApp/src/models/message/message.dart';
 
@@ -11,7 +13,57 @@ class MessageWidget extends StatefulWidget {
 
 class _MessageWidgetState extends State<MessageWidget> {
 
-  Widget contentBox() {
+  Widget _buildDocumentMessage() {
+    Color decorationColor = (widget.isSentByMe) ? Colors.red : Colors.grey[300];
+    Color textColor = (widget.isSentByMe) ? Colors.white : Colors.black;
+    print((widget.message as DocumentMessage).documentName);
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+        child: Row(
+          children: [
+            Center(
+              child: Icon(
+                Icons.file_download,
+                size: 16,
+              ),
+            ),
+            Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width / 3 * 2,
+              ),
+              child: RichText(
+                text: TextSpan(
+                  text: (widget.message as DocumentMessage).documentName,
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: textColor
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+      decoration: BoxDecoration(
+        color: decorationColor,
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+    );
+  }
+  Widget _buildImageMessage() {
+    print("ImageWidget\n");
+    return Container(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width / 2,
+      ),
+      child: Image(
+        image: (widget.message as ImageMessage).imageProvider,
+        fit: BoxFit.fitWidth,
+      ),
+    );
+  }
+  Widget _buildTextMessage() {
     Color decorationColor = (widget.isSentByMe) ? Colors.red : Colors.grey[300];
     Color textColor = (widget.isSentByMe) ? Colors.white : Colors.black;
     return Container(
@@ -19,7 +71,7 @@ class _MessageWidgetState extends State<MessageWidget> {
         maxWidth: MediaQuery.of(context).size.width / 3 * 2,
       ),
       child: Text(
-        widget.message.content.text,
+        widget.message.getContent(),
         style: TextStyle(color: textColor),
       ),
       padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
@@ -29,13 +81,23 @@ class _MessageWidgetState extends State<MessageWidget> {
       ),
     );
   }
+  Widget _buildMessage() {
+    print(widget.message.type);
+    if (widget.message.type == MessageType.image) {
+      return _buildImageMessage();
+    }
+    if (widget.message.type == MessageType.document) {
+      return _buildDocumentMessage();
+    }
+    return _buildTextMessage();
+  }
   @override
   Widget build(BuildContext context) {
     if (widget.isSentByMe) {
       return Container(
         child: Row(
           children: [
-            contentBox(),
+            _buildMessage(),
             SizedBox(width: 5.0),
           ],
           mainAxisAlignment: MainAxisAlignment.end,
@@ -47,7 +109,7 @@ class _MessageWidgetState extends State<MessageWidget> {
         child: Row(
           children: [
             SizedBox(width: 5.0),
-            contentBox(),
+            _buildMessage(),
           ],
           mainAxisAlignment: MainAxisAlignment.start,
         ),
