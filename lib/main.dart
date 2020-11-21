@@ -1,3 +1,4 @@
+import 'package:ChatApp/src/screens/auth_screens/sign_in_screen.dart';
 import 'package:ChatApp/src/screens/conversation_screens/conversation_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,6 +13,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  bool userIsLoggedIn = true;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -20,9 +22,19 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.red,
         accentColor: Colors.pink,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       debugShowCheckedModeBanner: false,
-      home: MainScreen(),
+      home: (userIsLoggedIn == false) ?
+      Material(
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Container(
+            child: SignInScreen()
+          )
+        ),
+      ) : MainScreen()
+
     );
   }
 }
