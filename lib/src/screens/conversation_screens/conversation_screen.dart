@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:ChatApp/src/models/message/image_message.dart';
 import 'package:ChatApp/src/models/message/message.dart';
 import 'package:ChatApp/src/models/conversation/conversation.dart';
+import 'package:ChatApp/src/screens/conversation_screens/conversation_info_screen.dart';
 import 'package:ChatApp/src/screens/conversation_screens/widgets/circular_image.dart';
 import 'package:ChatApp/src/screens/conversation_screens/widgets/message_widget.dart';
 import 'package:ChatApp/src/screens/conversation_screens/widgets/name_widget.dart';
@@ -13,6 +15,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
+
+import 'image_view_screen.dart';
 
 
 
@@ -53,85 +57,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       _image = File(image.path);
     });
   }
-  void _showImagePicker(context) {
-    showModalBottomSheet(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(25.0),
-          topRight: Radius.circular(25.0),
-        ),
-      ),
-      context: context,
-      builder: (context) {
-        return new Container(
-          height: 200.0,
-          child: Column(
-            children: [
-              Container(
-                child: Text(
-                  "Choose your source",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.red,
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  SizedBox(width: 5.0,),
-                  Container(
-                    constraints: BoxConstraints(
-                      maxWidth: 100.0,
-                    ),
-                    child: FlatButton(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Column(
-                        children: [
-                          Icon(Icons.photo_library),
-                          SizedBox(height: 10.0,),
-                          Text(
-                            'Photo Library',
-                            style: TextStyle(
-                              fontSize: 12.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                      onPressed: () {
-                        print("Image from gallery");
-                        _imageFromGallery();
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-                  SizedBox(width: 5.0),
-                  Column(
-                      children: [
-                        Container(
-                          constraints: BoxConstraints(
-                            maxWidth: 50.0,
-                          ),
-                          child: FlatButton(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Icon(Icons.photo_camera),
-                            onPressed: () {
-                              print("image from camera");
-                              _imageFromCamera();
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ),
-                        Text('Photo Camera'),
-                      ]
-                  )
-                ],
-              ),
-            ],
-          ),
-        );
-      }
-    );
-  }
+
 
   ///File function
   _filePathFromDevice() async {
@@ -155,17 +81,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
   Widget _buildAppBar() {
     return AppBar(
-      leading: FlatButton(
+      leading: IconButton(
+        iconSize: 25.0,
+        color: Colors.white,
+        icon: Icon(Icons.arrow_back_rounded),
         onPressed: () {
           Navigator.pop(context);
         },
-        child: Center(
-          child: Icon(
-            Icons.arrow_back_rounded,
-            size: 30.0,
-            color: Colors.white,
-          ),
-        ),
       ),
       title: Row(
         children: [
@@ -184,32 +106,22 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
       elevation: 0.0,
       actions: [
-        Container(
-          constraints: BoxConstraints(
-              maxWidth: 50.0
-          ),
-          child: FlatButton(
-              onPressed: (){},
-              child: Icon(
-                Icons.call,
-                color: Colors.white,
-              )
-          ),
+        IconButton(
+          iconSize: 25.0,
+          icon: Icon(Icons.call, color: Colors.white,),
+          onPressed: () {}
         ),
-        Container(
-          constraints: BoxConstraints(
-            maxWidth: 50.0
-          ),
-          child: FlatButton(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
-            onPressed: (){},
-            child: Center(
-              child: Icon(
-                Icons.info,
-                color: Colors.white,
-              ),
-            )
-          ),
+        IconButton(
+          iconSize: 25.0,
+          icon: Icon(Icons.info, color: Colors.white,),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ConversationInfoScreen(widget.uid, widget.conversation)
+              )
+            );
+          }
         ),
         SizedBox(width: 5.0)
       ],
@@ -244,70 +156,42 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     ),
                   ),
                 ),
-                Container(
-                  constraints: BoxConstraints(
-                    maxWidth: 50.0,
-                  ),
-                  child: FlatButton(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    onPressed: () {
-                      //TODO: send message to
-                      _textEditingController.clear();
-                    },
-                    child: Icon(
-                      Icons.send,
-                      color: Colors.redAccent,
-                      //TODO: do actually onPressed function
-                    ),
-                  ),
+                IconButton(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  onPressed: () {
+                    //TODO: send message to
+                    _textEditingController.clear();
+                  },
+                  icon: Icon(Icons.send, color: Colors.red,),
+                  iconSize: 20.0,
                 )
               ],
             ),
             Row(
               //TODO: do option for gif, icon, ...
               children: [
-                Container(
-                  constraints: BoxConstraints(
-                    maxWidth: 50.0
-                  ),
-                  child: FlatButton(
-                    padding: EdgeInsets.symmetric(horizontal: 1.0),
-                    onPressed: () {},
-                    child: Icon(
-                      Icons.face,
-                      color: Colors.redAccent,
-                    ),
-                  ),
+                IconButton(
+                  padding: EdgeInsets.symmetric(horizontal: 1.0),
+                  onPressed: () {},
+                  icon: Icon(Icons.face),
+                  color: Colors.redAccent,
                 ),
-                Container(
-                  constraints: BoxConstraints(
-                      maxWidth: 50.0
-                  ),
-                  child: FlatButton(
-                    padding: EdgeInsets.symmetric(horizontal: 1.0),
-                    onPressed: () {
-                      _imageFromCamera();
-                    },
-                    child: Icon(
-                      Icons.image,
-                      color: Colors.redAccent,
-                    ),
-                  ),
+                IconButton(
+                  padding: EdgeInsets.symmetric(horizontal: 1.0),
+                  onPressed: () {
+                    _imageFromCamera();
+                  },
+                  icon: Icon(Icons.image),
+                  color: Colors.redAccent,
                 ),
-                Container(
-                  constraints: BoxConstraints(
-                      maxWidth: 50.0
-                  ),
-                  child: FlatButton(
-                    padding: EdgeInsets.symmetric(horizontal: 1.0),
-                    onPressed: () {
-                      _filesFromDevice();
-                    },
-                    child: Icon(
-                      Icons.attach_file,
-                      color: Colors.redAccent,
-                    ),
-                  ),
+                IconButton(
+                  padding: EdgeInsets.symmetric(horizontal: 1.0),
+                  onPressed: () {
+                    _filesFromDevice();
+                  },
+                  icon: Icon(Icons.attach_file),
+                  color: Colors.redAccent,
+
                 ),
               ],
             )
@@ -338,12 +222,24 @@ class _ConversationScreenState extends State<ConversationScreen> {
               Widget w;
               bool showName = false;
               bool showTime = false;
-
+              w = MessageWidget(widget.conversation.messageList[currIdx], isSentByMe);
+              if (currMess.type == MessageType.image) {
+                w = GestureDetector(
+                  onTap: () {
+                    print("Tap tap");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => ImageScreen(widget.conversation.displayName, (currMess as ImageMessage).imageProvider))
+                    );
+                  },
+                  child: w,
+                );
+              }
               if (((nextIdx < length && widget.conversation.messageList[nextIdx].uid != currMess.uid) || nextIdx >= length)) {
                 if (isSentByMe) {
                   w = Column(
                     children: [
-                      MessageWidget(widget.conversation.messageList[currIdx], isSentByMe),
+                      w,
                       SizedBox(height: 5.0,),
                     ],
                   );
@@ -354,7 +250,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                         children: [
                           SizedBox(width: 10.0,),
                           CircularImage(currMess.avatarProvider),
-                          MessageWidget(currMess, isSentByMe),
+                          w,
                         ],
                       ),
                       SizedBox(height: 5.0,)
@@ -362,29 +258,16 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   );
                 }
               } else {
-                if (isSentByMe) {
-                  w = MessageWidget(widget.conversation.messageList[currIdx], isSentByMe);
-                } else {
+                if (!isSentByMe) {
                   w = Row(
                     children: [
                       SizedBox(width: 40.0),
-                      MessageWidget(currMess, isSentByMe)
+                      w
                     ],
                   );
                 }
               }
-              w = GestureDetector(
-                onLongPress: () {
-                  showMenu(
-                    position: RelativeRect.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                    context: context,
-                    items: <PopupMenuEntry>[
-                      
-                    ],
-                  );
-                },
-                child: w,
-              );
+
               int prevIdx = currIdx - 1;
               if ((prevIdx >= 0 && currMess.sentTime.difference(widget.conversation.messageList[prevIdx].sentTime).inMinutes >= 15) || prevIdx < 0) {
                 showTime = true;
@@ -411,6 +294,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   ],
                 );
               }
+
+
               return w;
             }
           ),

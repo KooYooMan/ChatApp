@@ -1,5 +1,7 @@
 import 'package:ChatApp/src/models/message/document_message.dart';
 import 'package:ChatApp/src/models/message/image_message.dart';
+import 'package:ChatApp/src/screens/conversation_screens/image_view_screen.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:ChatApp/src/models/message/message.dart';
 
@@ -39,6 +41,31 @@ class _MessageWidgetState extends State<MessageWidget> {
                     decoration: TextDecoration.underline,
                     color: textColor
                   ),
+                  recognizer: TapGestureRecognizer()..onTap = () {
+                    print((widget.message as DocumentMessage).documentURL);
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: Text("Download " + (widget.message as DocumentMessage).documentName),
+                        content: Text("Do you accept?"),
+                        actions: [
+                          FlatButton(
+                            onPressed: () {
+                              //TODO: download file
+                              Navigator.of(context, rootNavigator: true).pop();
+                            },
+                            child: Text("Yes"),
+                          ),
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.of(context, rootNavigator: true).pop();
+                            },
+                            child: Text("No"),
+                          )
+                        ],
+                      ),
+                    );
+                  }
                 ),
               ),
             )
@@ -53,13 +80,12 @@ class _MessageWidgetState extends State<MessageWidget> {
   }
   Widget _buildImageMessage() {
     print("ImageWidget\n");
-    return Container(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width / 2,
-      ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(15.0),
       child: Image(
         image: (widget.message as ImageMessage).imageProvider,
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.fill,
+        width: (MediaQuery.of(context).size.width - 30) / 2,
       ),
     );
   }
@@ -102,7 +128,7 @@ class _MessageWidgetState extends State<MessageWidget> {
           ],
           mainAxisAlignment: MainAxisAlignment.end,
         ),
-        padding: EdgeInsets.only(bottom: 2.0),
+        padding: EdgeInsets.only(bottom: 2.0, right: 10.0),
       );
     } else {
       return Container(
