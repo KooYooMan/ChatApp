@@ -15,6 +15,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 import 'image_view_screen.dart';
 
@@ -41,7 +42,19 @@ class _ConversationScreenState extends State<ConversationScreen> {
   String _filePath;
   List<File> _files;
   ImagePicker _imagePicker = ImagePicker();
+  bool _keyboardVisible = false;
 
+  void initState() {
+    super.initState();
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool isVisible) {
+        setState(() {
+          _keyboardVisible = isVisible;
+          print(_keyboardVisible);
+        });
+      }
+    );
+  }
   //event function
   _imageFromGallery() async {
     var image = await _imagePicker.getImage(source: ImageSource.gallery);
@@ -54,18 +67,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
     var image = await _imagePicker.getImage(source: ImageSource.camera);
 
     setState(() {
+      print(image.path);
       _image = File(image.path);
     });
   }
 
 
   ///File function
-  _filePathFromDevice() async {
-    String path = await FilePicker.getFilePath();
-    setState(() {
-      _filePath = path;
-    });
-  }
 
   _filesFromDevice() async {
     List<File> files = await FilePicker.getMultiFile();
@@ -141,16 +149,18 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 SizedBox(width: 8,),
                 Flexible(
                   child: Container(
-                    padding: EdgeInsets.all(13.0),
+                    padding: EdgeInsets.only(top: 10.0, bottom: 5.0, left: 12.0, right: 12.0),
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(18.0),
                     ),
-                    child: TextField(
+                    child: TextFormField(
                       style: TextStyle(color: Colors.black, fontSize: 15.0),
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
                       controller: _textEditingController,
                       decoration: InputDecoration.collapsed(
-                        hintText: "Viết tin nhắn",
+                        hintText: "Aa",
                         fillColor: Colors.grey
                       ),
                     ),
@@ -159,6 +169,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 IconButton(
                   padding: EdgeInsets.symmetric(horizontal: 8.0),
                   onPressed: () {
+                    if (_textEditingController.text.length == 0) {
+                      return;
+                    }
+                    print(_textEditingController.text);
                     //TODO: send message to
                     _textEditingController.clear();
                   },
@@ -167,7 +181,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 )
               ],
             ),
-            Row(
+            SizedBox(height: 5.0,),
+            (_keyboardVisible == false) ? Row(
               //TODO: do option for gif, icon, ...
               children: [
                 IconButton(
@@ -194,7 +209,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
                 ),
               ],
-            )
+            ) : Container()
           ],
         ),
       ),

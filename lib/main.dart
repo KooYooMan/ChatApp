@@ -1,5 +1,6 @@
 import 'package:ChatApp/src/screens/auth_screens/sign_in_screen.dart';
 import 'package:ChatApp/src/screens/conversation_screens/conversation_screen.dart';
+import 'package:ChatApp/src/screens/conversation_screens/report_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ChatApp/src/screens/main_screen/main_screen.dart';
@@ -34,7 +35,6 @@ class MyApp extends StatelessWidget {
           )
         ),
       ) : MainScreen()
-
     );
   }
 }
