@@ -164,6 +164,8 @@ FakeDatabase _fakeDatabase() {
   db.addMessage(TextMessage("uid2", "cid0", name2, db.getProvider(2), d2, true, smallContent));
   db.addMessage(ImageMessage("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), true, "https://picsum.photos/250?image=9"));
   db.addMessage(ImageMessage("uid1", "cid0", name1, db.getProvider(0), DateTime.now(), true, "https://picsum.photos/250?image=9"));
+  db.addMessage(ImageMessage("uid1", "cid0", name1, db.getProvider(0), DateTime.now(), true, "https://media1.giphy.com/media/3o7TKtQGIiZ6NkRCNi/giphy.gif?cid=538c7224q06k4h2lrablsjkv5oltaty7od1mxuyl7s7p06y9&rid=giphy.gif"));
+  db.addMessage(ImageMessage("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), true, "https://media1.giphy.com/media/3o7TKtQGIiZ6NkRCNi/giphy.gif?cid=538c7224q06k4h2lrablsjkv5oltaty7od1mxuyl7s7p06y9&rid=giphy.gif"));
 
   // db.addMessage(TextMessage("uid1", "cid0", name1, db.getProvider(1), d2, true, smallContent));
   // db.addMessage(TextMessage("uid2", "cid0", name2, db.getProvider(2), d4, true, bigContent));

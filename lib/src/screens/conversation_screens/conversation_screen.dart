@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:ChatApp/src/models/message/image_message.dart';
 import 'package:ChatApp/src/models/message/message.dart';
@@ -11,12 +13,11 @@ import 'package:ChatApp/src/screens/conversation_screens/widgets/name_widget.dar
 import 'package:ChatApp/src/screens/conversation_screens/widgets/time_stamp_widget.dart';
 import 'package:ChatApp/src/screens/fake_data/fake_database.dart';
 import 'package:ChatApp/src/utils/emoji_converter.dart';
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
-
+import 'package:giphy_picker/giphy_picker.dart';
 import 'image_view_screen.dart';
 
 
@@ -35,7 +36,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   final TextEditingController _textEditingController = new TextEditingController();
   // ignore: close_sinks
   final StreamController<Message> messageStreamController = new StreamController();
-
+  final String gifAPIKey = 'jmLMn13KlLFxRWv8izG4euJY4xsICx0d';
   ScrollController _messageListScrollController = ScrollController();
   File _image;
   File _file;
@@ -43,6 +44,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   List<File> _files;
   ImagePicker _imagePicker = ImagePicker();
   bool _keyboardVisible = false;
+  bool _showEmojiPicker = false;
 
   void initState() {
     super.initState();
@@ -50,6 +52,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
       onChange: (bool isVisible) {
         setState(() {
           _keyboardVisible = isVisible;
+          if (_keyboardVisible == true && _showEmojiPicker == true) {
+            _showEmojiPicker = false;
+          }
           print(_keyboardVisible);
         });
       }
@@ -57,23 +62,23 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
   //event function
   _imageFromGallery() async {
-    var image = await _imagePicker.getImage(source: ImageSource.gallery);
-
+    File file = await FilePicker.getFile(type: FileType.custom, allowedExtensions: ['jpg', 'jpeg', 'png']);
     setState(() {
-      _image = File(image.path);
+      if (file != null) {
+        print(file.path);
+        _image = file;
+      } else {
+        print("NULL");
+      }
     });
   }
   _imageFromCamera() async {
     var image = await _imagePicker.getImage(source: ImageSource.camera);
-
     setState(() {
       print(image.path);
       _image = File(image.path);
     });
   }
-
-
-  ///File function
 
   _filesFromDevice() async {
     List<File> files = await FilePicker.getMultiFile();
@@ -81,11 +86,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
       _files = files;
     });
   }
-  _fileFromDevice() async {
-    File file = await FilePicker.getFile();
-    setState(() {
-      _file = file;
-    });
+
+  _giphyPicker() async {
+    final gif = await GiphyPicker.pickGif(context: context, apiKey: gifAPIKey);
+    print(gif.images.original.url);
+    //TODO: send gif message from here.
   }
   Widget _buildAppBar() {
     return AppBar(
@@ -136,6 +141,17 @@ class _ConversationScreenState extends State<ConversationScreen> {
       backgroundColor: Colors.red,
     );
   }
+  Widget _buildEmojiPicker() {
+    return EmojiPicker(
+      rows: 2,
+      columns: 7,
+      buttonMode: ButtonMode.MATERIAL,
+      onEmojiSelected: (emoji, category) {
+        print(emoji);
+        _textEditingController.text += emoji.emoji;
+      },
+    );
+  }
 
   Widget _buildInputWidget() {
     return Container(
@@ -146,7 +162,19 @@ class _ConversationScreenState extends State<ConversationScreen> {
             SizedBox(height: 5.0,),
             Row(
               children: [
-                SizedBox(width: 8,),
+                IconButton(
+                  padding: EdgeInsets.symmetric(horizontal: 1.0),
+                  onPressed: () {
+                    setState(() {
+                      _showEmojiPicker = !_showEmojiPicker;
+                      if (_showEmojiPicker == true && _keyboardVisible == true) {
+                        FocusScope.of(context).unfocus();
+                      }
+                    });
+                  },
+                  icon: Icon(Icons.face),
+                  color: Colors.redAccent,
+                ),
                 Flexible(
                   child: Container(
                     padding: EdgeInsets.only(top: 10.0, bottom: 5.0, left: 12.0, right: 12.0),
@@ -177,26 +205,26 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     _textEditingController.clear();
                   },
                   icon: Icon(Icons.send, color: Colors.red,),
-                  iconSize: 20.0,
                 )
               ],
             ),
-            SizedBox(height: 5.0,),
             (_keyboardVisible == false) ? Row(
               //TODO: do option for gif, icon, ...
               children: [
                 IconButton(
                   padding: EdgeInsets.symmetric(horizontal: 1.0),
-                  onPressed: () {},
-                  icon: Icon(Icons.face),
+                  onPressed: () {
+                    _imageFromCamera();
+                  },
+                  icon: Icon(Icons.camera_alt),
                   color: Colors.redAccent,
                 ),
                 IconButton(
                   padding: EdgeInsets.symmetric(horizontal: 1.0),
                   onPressed: () {
-                    _imageFromCamera();
+                    _imageFromGallery();
                   },
-                  icon: Icon(Icons.image),
+                  icon: Icon(Icons.image_outlined),
                   color: Colors.redAccent,
                 ),
                 IconButton(
@@ -206,10 +234,17 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   },
                   icon: Icon(Icons.attach_file),
                   color: Colors.redAccent,
-
                 ),
+                IconButton(
+                  padding: EdgeInsets.symmetric(horizontal: 1.0),
+                  onPressed: () {
+                    _giphyPicker();
+                  },
+                  icon: Icon(Icons.gif),
+                  color: Colors.redAccent,
+                )
               ],
-            ) : Container()
+            ) : Container(),
           ],
         ),
       ),
@@ -222,7 +257,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
         if (snapshot.hasData) {
           widget.conversation.addMessage(snapshot.data);
         }
-        return Expanded(
+        return Flexible(
+          fit: FlexFit.tight,
           child: ListView.builder(
             controller: _messageListScrollController,
             itemCount: widget.conversation.messageList.length,
@@ -335,7 +371,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   .size
                   .width,
               child: _buildInputWidget(),
-            )
+            ),
+            (_showEmojiPicker) ? _buildEmojiPicker() : Container(),
           ],
         )
       )
