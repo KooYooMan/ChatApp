@@ -29,7 +29,9 @@ class _ReportScreenState extends State<ReportScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       leading: IconButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pop(context);
+        },
         icon: Icon(Icons.arrow_back_rounded, color: Colors.black,),
         iconSize: 25.0,
       ),

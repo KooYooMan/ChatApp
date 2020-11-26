@@ -32,6 +32,15 @@ class FakeDatabase {
 
     return results;
   }
+  List<User> getUsers(String key) {
+    List<User> matchUsers = List<User>();
+    for (int i = 0; i < users.length; i++) {
+      if (users[i].displayName.contains(key)) {
+        matchUsers.add(users[i]);
+      }
+    }
+    return matchUsers;
+  }
   Stream<Message> getMessageStreamByCid(String cid) async* {
     List<Message> cidMessages = getMessagesByCid(cid);
     print("messages");
@@ -150,6 +159,12 @@ FakeDatabase _fakeDatabase() {
   db.users.add(User("uid3", name3, db.getProvider(3)));
   db.users.add(User("uid4", name4, db.getProvider(4)));
   db.users.add(User("uid5", name5, db.getProvider(5)));
+  db.users.add(User("uid6", name0, db.getProvider(0)));
+  db.users.add(User("uid7", name1, db.getProvider(1)));
+  db.users.add(User("uid8", name2, db.getProvider(2)));
+  db.users.add(User("uid9", name3, db.getProvider(3)));
+  db.users.add(User("uid10", name4, db.getProvider(4)));
+  db.users.add(User("uid11", name5, db.getProvider(5)));
 
   String smallContent = loremIpsum(paragraphs: 1, words: 4) + " :)";
   String mediumContent = loremIpsum(paragraphs: 1, words: 10) + " :(";
@@ -198,9 +213,9 @@ FakeDatabase _fakeDatabase() {
   db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), DateTime.now(), true, smallContent));
 
 
-  db.conversations.add(Conversation("cid0", "Conversation 0", db.getProvider(3)));
-  db.conversations.add(Conversation("cid1", "Conversation 1", db.getProvider(4)));
-  db.conversations.add(Conversation("cid2", "Conversation 2", db.getProvider(5)));
+  db.conversations.add(Conversation("cid0", "Conversation 0", db.getProvider(3), true));
+  db.conversations.add(Conversation("cid1", "Conversation 1", db.getProvider(4), true));
+  db.conversations.add(Conversation("cid2", "Conversation 2", db.getProvider(5), false));
 
 
   return db;

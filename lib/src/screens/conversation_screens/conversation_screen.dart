@@ -182,6 +182,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(18.0),
                     ),
+                    constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.height / 6,
+                    ),
                     child: TextFormField(
                       style: TextStyle(color: Colors.black, fontSize: 15.0),
                       keyboardType: TextInputType.multiline,
@@ -286,6 +289,32 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   child: w,
                 );
               }
+              var popupAvatar = PopupMenuButton(
+                onSelected: (result) {
+                  if (result == 1) {
+                    print("delete");
+                  } else if (result == 2) {
+                    print("report");
+                  } else {
+                    print("other");
+                  }
+                },
+                itemBuilder: (context) => [
+                  (widget.conversation.isPrivate) ? PopupMenuItem(
+                    value: 3,
+                    child: Text('Send private message'),
+                  ) : null,
+                  PopupMenuItem(
+                    value: 1,
+                    child: Text("Voice call"),
+                  ),
+                  PopupMenuItem(
+                    value: 2,
+                    child: Text('Video call'),
+                  ),
+                ],
+                child: CircularImage(currMess.avatarProvider),
+              );
               if (((nextIdx < length && widget.conversation.messageList[nextIdx].uid != currMess.uid) || nextIdx >= length)) {
                 if (isSentByMe) {
                   w = Column(
@@ -300,7 +329,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                       Row(
                         children: [
                           SizedBox(width: 10.0,),
-                          CircularImage(currMess.avatarProvider),
+                          popupAvatar,
                           w,
                         ],
                       ),

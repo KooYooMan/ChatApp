@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:ChatApp/src/models/conversation/conversation.dart';
+import 'package:ChatApp/src/screens/conversation_screens/add_member_screen.dart';
 import 'package:ChatApp/src/screens/conversation_screens/decorations/decorations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -47,29 +48,29 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
       ),
       actions: [
         PopupMenuButton(
-            onSelected: (result) {
-              if (result == 1) {
-                print("delete");
-              } else if (result == 2) {
-                print("report");
-              } else {
-                print("other");
-              }
-            },
-            icon: Icon(
-                Icons.more_vert,
-                color: Colors.black
+          onSelected: (result) {
+            if (result == 1) {
+              print("delete");
+            } else if (result == 2) {
+              print("report");
+            } else {
+              print("other");
+            }
+          },
+          icon: Icon(
+              Icons.more_vert,
+              color: Colors.black
+          ),
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              value: 1,
+              child: Text("Delete conversation"),
             ),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 1,
-                child: Text("Delete conversation"),
-              ),
-              PopupMenuItem(
-                value: 2,
-                child: Text('Report issues'),
-              )
-            ]
+            PopupMenuItem(
+              value: 2,
+              child: Text('Report issues'),
+            )
+          ]
         )
       ],
     );
@@ -189,7 +190,29 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
                       ),
                       Text("On"),
                     ],
-                  )
+                  ),
+                  (widget.conversation.isPrivate) ? SizedBox(width: 30.0,) : Container(),
+                  (widget.conversation.isPrivate) ? Column(
+                    children: [
+                      Container(
+                        decoration: greyCircleDecoration(),
+                        child: IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => AddMemberScreen()),
+                            );
+                          },
+                          icon: Icon(
+                            Icons.add,
+                            color: Colors.black,
+                            size: 20.0,
+                          ),
+                        ),
+                      ),
+                      Text("Add"),
+                    ],
+                  ) : Container(),
                 ],
               ),
               SizedBox(height: 20.0,),
