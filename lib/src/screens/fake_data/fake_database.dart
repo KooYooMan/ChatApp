@@ -19,7 +19,7 @@ class FakeDatabase {
     print("cid = " + cid);
     List<Message> results = List<Message>();
     for (int i = 0; i < messages.length; i++) {
-      if (messages[i].cid == cid) {
+      if (messages[i].sender == cid) {
         results.add(messages[i]);
       }
     }
@@ -83,12 +83,12 @@ class FakeDatabase {
   void addMessage(Message message) {
     //Update list of messages;
     ++maxMid;
-    message.mid = "mid" + maxMid.toString();
+    // message.mid = "mid" + maxMid.toString();
     message.content = Content(maxMid.toString() + " " + message.content.text);
     messages.add(message);
     bool foundCid = false;
     for (int i = 0; i < recentlyMessages.length; i++) {
-      if (recentlyMessages[i].cid == message.cid) {
+      if (recentlyMessages[i].sender == message.sender) {
         if (message.sentTime.compareTo(recentlyMessages[i].sentTime) == 1) {
           recentlyMessages[i] = message;
         }
@@ -153,41 +153,9 @@ FakeDatabase _fakeDatabase() {
   DateTime d4 = DateTime.utc(2020, 4, 12);
   DateTime d5 = DateTime.utc(2020, 5, 12);
 
-  db.addMessage(Message("uid1", "cid0", name1, db.getProvider(1), d2, smallContent, true));
-  db.addMessage(Message("uid2", "cid0", name2, db.getProvider(2), d4, bigContent, true));
-  db.addMessage(Message("uid0", "cid0", name0, db.getProvider(0), d5, bigContent, true));
-  db.addMessage(Message("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), smallContent, true));
-  db.addMessage(Message("uid2", "cid0", name2, db.getProvider(2), d2, smallContent, true));
-  db.addMessage(Message("uid2", "cid0", name2, db.getProvider(2), d4, bigContent, true));
-  db.addMessage(Message("uid0", "cid0", name0, db.getProvider(0), d5, bigContent, true));
-  db.addMessage(Message("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), smallContent, true));
-  db.addMessage(Message("uid1", "cid0", name1, db.getProvider(1), d2, smallContent, true));
-  db.addMessage(Message("uid2", "cid0", name2, db.getProvider(2), d4, bigContent, true));
-  db.addMessage(Message("uid0", "cid0", name0, db.getProvider(0), d5, bigContent, true));
-  db.addMessage(Message("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), smallContent, true));
-
-  db.addMessage(Message("uid0", "cid1", name0, db.getProvider(0), DateTime.now(), smallContent, true));
-  db.addMessage(Message("uid1", "cid1", name1, db.getProvider(1), d2, smallContent, true));
-  db.addMessage(Message("uid2", "cid1", name2, db.getProvider(2), d4, bigContent, true));
-  db.addMessage(Message("uid0", "cid1", name0, db.getProvider(0), d5, bigContent, true));
-  db.addMessage(Message("uid2", "cid1", name2, db.getProvider(2), d5, bigContent, true));
-  db.addMessage(Message("uid2", "cid1", name2, db.getProvider(2), DateTime.now(), smallContent, true));
-
-  db.addMessage(Message("uid2", "cid2", name2, db.getProvider(2), d2, smallContent, true));
-  db.addMessage(Message("uid2", "cid2", name2, db.getProvider(2), d4, bigContent, true));
-  db.addMessage(Message("uid0", "cid2", name0, db.getProvider(0), d5, bigContent, true));
-  db.addMessage(Message("uid0", "cid2", name0, db.getProvider(0), DateTime.now(), smallContent, true));
-  db.addMessage(Message("uid1", "cid2", name1, db.getProvider(1), d2, smallContent, true));
-  db.addMessage(Message("uid0", "cid2", name0, db.getProvider(0), d5, bigContent, true));
-  db.addMessage(Message("uid0", "cid2", name0, db.getProvider(0), DateTime.now(), smallContent, true));
-  db.addMessage(Message("uid2", "cid2", name2, db.getProvider(2), d4, bigContent, true));
-  db.addMessage(Message("uid0", "cid2", name0, db.getProvider(0), d5, bigContent, true));
-  db.addMessage(Message("uid0", "cid2", name0, db.getProvider(0), DateTime.now(), smallContent, true));
-
-
-  db.conversations.add(Conversation("cid0", "Conversation 0", db.getProvider(3)));
-  db.conversations.add(Conversation("cid1", "Conversation 1", db.getProvider(4)));
-  db.conversations.add(Conversation("cid2", "Conversation 2", db.getProvider(5)));
+  // db.conversations.add(Conversation("cid0", "Conversation 0", db.getProvider(3)));
+  // db.conversations.add(Conversation("cid1", "Conversation 1", db.getProvider(4)));
+  // db.conversations.add(Conversation("cid2", "Conversation 2", db.getProvider(5)));
 
 
   return db;

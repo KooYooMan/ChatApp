@@ -13,7 +13,7 @@ class MessageListWidget extends StatelessWidget {
       child: ListView.builder(
         padding: EdgeInsets.all(10.0),
         itemBuilder: (BuildContext context, int index) {
-          return MessageWidget(messageList[index], uid);
+          return MessageWidget(messageList[index], true);
         },
         itemCount: messageList.length,
         controller: listScrollController,

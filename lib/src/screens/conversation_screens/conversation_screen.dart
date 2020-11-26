@@ -12,23 +12,27 @@ import 'package:ChatApp/src/screens/fake_data/fake_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import 'package:get_it/get_it.dart';
+import 'package:ChatApp/src/services/auth_service.dart';
+import 'package:ChatApp/src/services/message_service.dart';
+import 'package:ChatApp/src/services/storage_service.dart';
+
 
 
 class ConversationScreen extends StatefulWidget {
-  final String uid;
-  final Conversation conversation;
-  final Stream<Message> messageStream;
-  ConversationScreen(this.uid, this.conversation, this.messageStream);
+  Conversation conversation;
+  ConversationScreen(this.conversation);
   @override
   _ConversationScreenState createState() => _ConversationScreenState();
 }
 
 
 class _ConversationScreenState extends State<ConversationScreen> {
-  final TextEditingController _textEditingController = new TextEditingController();
-  // ignore: close_sinks
-  final StreamController<Message> messageStreamController = new StreamController();
+  AuthService _authService = GetIt.I.get<AuthService>();
+  MessageService _messageService = GetIt.I.get<MessageService>();
+  StorageService _storageService = GetIt.I.get<StorageService>();
 
+  final TextEditingController _textEditingController = new TextEditingController();
   ScrollController _messageListScrollController = ScrollController();
 
   Widget conversationAppBar() {
@@ -43,7 +47,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
       title: Row(
         children: [
-          CircularImage(widget.conversation.avatarProvider),
+          CircularImage(NetworkImage(_authService.getCurrentUser().photoURL)), //TODO: change avatar
           SizedBox(width: 8.0),
           Container(
             child: Text(
@@ -100,10 +104,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   child: IconButton(
                     icon: new Icon(Icons.send),
                     color: Colors.grey,
-                    //TODO: do actually onPressed function
-                    onPressed: () => {
-                      //TODO: send message to
-                      _textEditingController.clear()
+                    onPressed: (){
+                      String messageContent = _textEditingController.text;
+                      _messageService.addMessage(widget.conversation, _authService.getCurrentUID(), messageContent);
+                      _textEditingController.clear();
                     },
                   )
                 )
@@ -131,33 +135,40 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
   }
   Widget messageListWidget() {
+    String cid = widget.conversation.cid;
+
     return StreamBuilder(
-      stream: widget.messageStream,
+      stream: _messageService.getMessages(cid),
       builder: (context, snapshot) {
+        List<Message> list = [];
         if (snapshot.hasData) {
-          widget.conversation.addMessage(snapshot.data);
+          Map data = snapshot.data.snapshot.value;
+          data.forEach((key, value) {
+            list.add(Message.fromSnapshot(key, value));
+          });
+          list.sort((Message a, Message b) => (a.sentTime.millisecondsSinceEpoch - b.sentTime.millisecondsSinceEpoch));
         }
         return Expanded(
           child: ListView.builder(
             controller: _messageListScrollController,
-            itemCount: widget.conversation.messageList.length,
+            itemCount: list.length,
             shrinkWrap: true,
             reverse: true,
             itemBuilder: (context, index) {
-              int length = widget.conversation.messageList.length;
+              int length = list.length;
               int currIdx = length - index - 1;
-              bool isSentByMe = widget.uid == widget.conversation.messageList[currIdx].uid;
-              Message currMess = widget.conversation.messageList[currIdx];
+              bool isSentByMe = _authService.getCurrentUID() == list[currIdx].sender;
+              Message currMess = list[currIdx];
               int nextIdx = currIdx + 1;
               Widget w;
               bool showName = false;
               bool showTime = false;
 
-              if (((nextIdx < length && widget.conversation.messageList[nextIdx].uid != currMess.uid) || nextIdx >= length)) {
+              if (((nextIdx < length && list[nextIdx].sender != currMess.sender) || nextIdx >= length)) {
                 if (isSentByMe) {
                   w = Column(
                     children: [
-                      MessageWidget(widget.conversation.messageList[currIdx], isSentByMe),
+                      MessageWidget(list[currIdx], isSentByMe),
                       SizedBox(height: 5.0,),
                     ],
                   );
@@ -169,7 +180,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                           SizedBox(width: 10.0,),
                           Align(
                             alignment: Alignment.bottomCenter,
-                            child: CircularImage(currMess.avatarProvider)
+                            child: CircularImage(NetworkImage(_authService.getCurrentUser().photoURL)) // TODO: avatar
                           ),
                           MessageWidget(currMess, isSentByMe),
                         ],
@@ -180,7 +191,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 }
               } else {
                 if (isSentByMe) {
-                  w = MessageWidget(widget.conversation.messageList[currIdx], isSentByMe);
+                  w = MessageWidget(list[currIdx], isSentByMe);
                 } else {
                   w = Row(
                     children: [
@@ -191,11 +202,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 }
               }
               int prevIdx = currIdx - 1;
-              if ((prevIdx >= 0 && currMess.sentTime.difference(widget.conversation.messageList[prevIdx].sentTime).inMinutes >= 15) || prevIdx < 0) {
+              if ((prevIdx >= 0 && currMess.sentTime.difference(list[prevIdx].sentTime).inMinutes >= 15) || prevIdx < 0) {
                 showTime = true;
 
               }
-              if ((prevIdx >= 0 && widget.conversation.messageList[prevIdx].uid != currMess.uid) || prevIdx < 0) {
+              if ((prevIdx >= 0 && list[prevIdx].sender != currMess.sender) || prevIdx < 0) {
                 showName = true;
               } else {
                 showName = showTime;
@@ -203,12 +214,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
               if (showName && !isSentByMe) {
                 w = Column(
                   children: [
-                    NameWidget(currMess.userDisplayName),
+                    NameWidget(widget.conversation.displayName),
                     w
                   ],
                 );
               }
-              print("text = " + currMess.content.text + " showtime = " + (showTime ? "true" : "false") + " uid = " + currMess.uid + " name = " + currMess.userDisplayName);
+              //print("text = " + currMess.content.text + " showtime = " + (showTime ? "true" : "false") + " uid = " + currMess.sender + " name = " + "TODO");
               if (showTime) {
                 w = Column(
                   children: [
@@ -252,7 +263,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
 ConversationScreen fakeConversationScreen(String cid) {
   Conversation fakeConversation = fakeDatabase.getConversationByCid(cid);
-  ConversationScreen conversationScreen = ConversationScreen("uid0", fakeConversation, fakeDatabase.getMessageStreamByCid(fakeConversation.cid));
+  ConversationScreen conversationScreen = ConversationScreen(fakeConversation);
   return conversationScreen;
 }
 

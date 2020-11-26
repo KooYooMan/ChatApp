@@ -4,9 +4,13 @@ import 'package:ChatApp/src/screens/main_screen/widgets/category_select.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/favorite_contacts.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/online_list.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/recently_chat.dart';
+import 'package:ChatApp/src/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 import 'widgets/custom_search_delegate.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get_it/get_it.dart';
 
 class MainScreen extends StatefulWidget {
   @override
@@ -14,6 +18,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  AuthService _authService = GetIt.I.get<AuthService>();
+
   int _idScreen = 0;
   void _changeScreen(int newId) {
     setState(() {
@@ -23,6 +29,7 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    User currentUser = _authService.getCurrentUser();
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
@@ -37,7 +44,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
             child: CircleAvatar(
               radius: 30.0,
-              backgroundImage: AssetImage("assets/images/avatar.jpg"),
+              backgroundImage: NetworkImage(currentUser.photoURL),
             ),
           ),
         ),
@@ -75,7 +82,7 @@ class _MainScreenState extends State<MainScreen> {
                         child: Column(
                           children: <Widget>[
                             FavoriteContacts(),
-                            RecentChats(),
+                            RecentChats(_authService.getCurrentUID()),
                           ],
                         ),
                       ),

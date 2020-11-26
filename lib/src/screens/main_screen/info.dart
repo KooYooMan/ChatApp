@@ -1,44 +1,29 @@
+import 'package:ChatApp/src/screens/auth_screens/sign_in_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:ChatApp/src/services/auth_service.dart';
 
 class Info extends StatelessWidget {
-  final features = [
-    "Email:",
-    "Password: ",
-    "Phone number: ",
-    "Phone number: ",
-    "Phone number: ",
-    "Phone number: ",
-    "Phone number: ",
-    "Phone number: ",
-    "Phone number: "
-  ];
-  final contents = [
-    "manhcaoduy1912@gmail.com",
-    "************",
-    "0941525452",
-    "0941525452",
-    "0941525452",
-    "0941525452",
-    "0941525452",
-    "0941525452",
-    "0941525452"
-  ];
-
-  final icons = [
-    'email.png',
-    'password.png',
-    'phone.png',
-    'phone.png',
-    'phone.png',
-    'phone.png',
-    'phone.png',
-    'phone.png',
-    'phone.png'
-  ];
+  AuthService _authService = GetIt.I.get<AuthService>();
 
   @override
   Widget build(BuildContext context) {
     // Scaffold is a layout for the major Material Components.
+
+    final features = [
+      "Email:",
+      "Password: "
+    ];
+    final contents = [
+      _authService.getCurrentUser().email,
+      "************"
+    ];
+
+    final icons = [
+      'email.png',
+      'password.png'
+    ];
+
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -51,7 +36,19 @@ class Info extends StatelessWidget {
               icon: Icon(Icons.exit_to_app),
               iconSize: 30.0,
               color: Colors.white,
-              onPressed: () {},
+              onPressed: () {
+                _authService.signOut();
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => Material(
+                    child: Scaffold(
+                        resizeToAvoidBottomInset: false,
+                        body: Container(
+                            child: SignInScreen()
+                        )
+                    ),
+                  ),
+                ),);
+              },
             ),
           ],
         ),
@@ -70,11 +67,11 @@ class Info extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 60.0,
-                        backgroundImage: AssetImage("assets/images/avatar.jpg"),
+                        backgroundImage: NetworkImage(_authService.getCurrentUser().photoURL),
                       ),
                       SizedBox(height: 10.0),
                       Text(
-                        "Manh Cao Duy",
+                        _authService.getCurrentUser().displayName,
                         style: TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 20.0),
                       ),
@@ -85,7 +82,7 @@ class Info extends StatelessWidget {
               Expanded(
                   child: Container(
                       child: ListView.separated(
-                          itemCount: 9,
+                          itemCount: 2,
                           separatorBuilder: (BuildContext context, int index) =>
                               Divider(height: 0.25),
                           itemBuilder: (BuildContext context, int index) {

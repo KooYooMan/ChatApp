@@ -1,6 +1,10 @@
+import 'package:ChatApp/src/screens/main_screen/main_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:ChatApp/src/services/auth_service.dart';
+import 'package:get_it/get_it.dart';
 
 emailValidator(String val){
   if (val.isEmpty) return "Your email should not be empty";
@@ -28,17 +32,19 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-
+  AuthService _authService = GetIt.I.get<AuthService>();
 
   final formKeySignIn = GlobalKey<FormState>();
   final formKeySignUp = GlobalKey<FormState>();
 
-  TextEditingController userNameTextEditingController = new TextEditingController();
+  TextEditingController emailTextEditingController = new TextEditingController();
   TextEditingController passwordTextEditingController = new TextEditingController();
   TextEditingController confirmPasswordTextEditingController = new TextEditingController();
 
   String _email;
   String _password;
+
+  String _signInError;
 
   int  _pageState = 0;
   var _backgroundColor = Colors.white;
@@ -77,7 +83,7 @@ class _SignInScreenState extends State<SignInScreen> {
             _keyboardVisibleOnce = true;
           }
 
-          print("Keyboard State Changed : $visible");
+          // print("Keyboard State Changed : $visible");
         });
       },
     );
@@ -85,22 +91,34 @@ class _SignInScreenState extends State<SignInScreen> {
 
   bool isLoading = false;
 
-  _signUp() {
+  Future<void> _signUp() async{
     if(formKeySignUp.currentState.validate()) {
       setState(() {
         isLoading = true;
       });
-      //TODO: do sign up
+      _email = emailTextEditingController.text;
+      _password = passwordTextEditingController.text;
+
+      _authService.signUp(_email, _password)
+          .catchError((error) {
+            return Future.error(error);
+          });
     }
   }
 
   _signIn() {
-    if (!_keyboardVisibleTwice) return;
-    if (formKeySignIn.currentState == null) return;
+    if (!_keyboardVisibleTwice) return -1;
+    if (formKeySignIn.currentState == null) return -1;
     if(formKeySignIn.currentState.validate()) {
+      _email = emailTextEditingController.text;
+      _password = passwordTextEditingController.text;
 
+      _authService.signIn(_email, _password).catchError((error){
+        // TODO: Handling signin exceptions.
+        return -1;
+      });
     }
-    return;
+    return 0;
   }
 
   @override
@@ -292,7 +310,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     InputWithIcon(
                       icon: Icons.email,
                       hint: "Enter Email...",
-                      controller: userNameTextEditingController,
+                      controller: emailTextEditingController,
                       formKey: formKeySignIn,
                     ),
                     SizedBox(height: 20,),
@@ -309,7 +327,14 @@ class _SignInScreenState extends State<SignInScreen> {
               Column(
                 children: <Widget>[
                   GestureDetector(
-                    onTap: _signIn(),
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      if (_signIn()){
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (_) => MainScreen(),
+                        ),);
+                      }
+                    },
                     child: PrimaryButton(
                       btnText: "Login",
                     ),
@@ -366,7 +391,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     InputWithIcon(
                       icon: Icons.email,
                       hint: "Enter Email...",
-                      controller: userNameTextEditingController,
+                      controller: emailTextEditingController,
                       formKey: formKeySignUp,
                     ),
                     SizedBox(height: 15,),
