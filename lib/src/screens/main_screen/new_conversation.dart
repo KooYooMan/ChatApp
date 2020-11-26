@@ -1,6 +1,11 @@
+import 'package:ChatApp/src/models/conversation/conversation.dart';
 import 'package:ChatApp/src/models/user/user.dart';
+import 'package:ChatApp/src/screens/conversation_screens/conversation_screen.dart';
 import 'package:ChatApp/src/screens/fake_data/fake_database.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:ChatApp/src/services/auth_service.dart';
+import 'package:ChatApp/src/services/message_service.dart';
 
 class NewConversation extends StatefulWidget {
   NewConversation({Key key}) : super(key: key);
@@ -10,16 +15,20 @@ class NewConversation extends StatefulWidget {
 }
 
 class _NewConversation extends State<NewConversation> {
-  List<User> favorites = fakeDatabase.getFavorites();
+  AuthService _authService = GetIt.I.get<AuthService>();
+  MessageService _messageService = GetIt.I.get<MessageService>();
+  User currentUser = null;
+  bool _loading = true;
+  List<User> favorites = null;
   List<User> userList = List<User>();
   TextEditingController _controller;
   List<User> renderList = List<User>();
   List<User> curList = List<User>();
 
+  @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
-    userList.addAll(favorites);
   }
 
   void dispose() {
@@ -51,6 +60,19 @@ class _NewConversation extends State<NewConversation> {
 
   @override
   Widget build(BuildContext context) {
+    _authService.getAllUsers().then((result) {
+      favorites = result;
+      userList.clear();
+      userList.addAll(favorites);
+
+      _authService.getCurrentDartUser().then((user) {
+        currentUser = user;
+        setState(() {
+          _loading = false;
+        });
+      });
+    });
+
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -73,7 +95,7 @@ class _NewConversation extends State<NewConversation> {
             decoration: BoxDecoration(
               color: Colors.white,
             ),
-            child: Column(
+            child: _loading? CircularProgressIndicator() : Column( // TODO: align CPI to center
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
@@ -100,12 +122,19 @@ class _NewConversation extends State<NewConversation> {
                     itemCount: curList.length,
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => Text("Hello World!"),
-                          ),
-                        ),
+                        onTap: () async {
+                          Conversation newConversation = await _messageService.addConversation(currentUser, curList[index]);
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (_) => Material(
+                              child: Scaffold(
+                                resizeToAvoidBottomInset: false,
+                                body: Container(
+                                  child: ConversationScreen(newConversation),
+                                )
+                              ),
+                            ),
+                          ));
+                        },
                         child: Padding(
                           padding: EdgeInsets.all(10.0),
                           child: Column(

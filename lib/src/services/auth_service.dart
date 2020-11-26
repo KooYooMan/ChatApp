@@ -1,3 +1,4 @@
+import 'package:ChatApp/src/models/user/user.dart' as user;
 import 'package:ChatApp/src/services/firebase.dart';
 import 'package:ChatApp/src/services/storage_service.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -43,6 +44,25 @@ class AuthService {
     query.once().then((value) {
       return value;
     });
+  }
+  
+  Future<List<user.User>> getAllUsers() async {
+    List <user.User> users = [];
+    await _firebaseService.getDatabaseReference(["users"]).once().then((snapshot){
+      Map data = snapshot.value;
+      data.forEach((key, value) {
+        users.add(user.User.fromSnapshot(key, value));
+      });
+    });
+    return users;
+  }
+
+  Future<user.User> getCurrentDartUser() async {
+    user.User result = null;
+    await _firebaseService.getDatabaseReference(["users", _firebaseAuth.currentUser.uid]).once().then((snapshot){
+      result = user.User.fromSnapshot(_firebaseAuth.currentUser.uid, snapshot.value);
+    });
+    return result;
   }
 
   Future<String> signUp(String email, String password) async {

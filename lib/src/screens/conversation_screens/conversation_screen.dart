@@ -143,9 +143,10 @@ class _ConversationScreenState extends State<ConversationScreen> {
         List<Message> list = [];
         if (snapshot.hasData) {
           Map data = snapshot.data.snapshot.value;
-          data.forEach((key, value) {
-            list.add(Message.fromSnapshot(key, value));
-          });
+          if (data != null)
+            data.forEach((key, value) {
+              list.add(Message.fromSnapshot(key, value));
+            });
           list.sort((Message a, Message b) => (a.sentTime.millisecondsSinceEpoch - b.sentTime.millisecondsSinceEpoch));
         }
         return Expanded(

@@ -25,7 +25,6 @@ class _RecentChatsState extends State<RecentChats> {
 
   @override
   Widget build(BuildContext context) {
-
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
@@ -55,10 +54,7 @@ class _RecentChatsState extends State<RecentChats> {
                     _conversations.add(Conversation.fromSnapshot(value));
                   });
 
-                  _conversations.sort((Conversation a, Conversation b) => (a.lastTimestamp - b.lastTimestamp));
-                  _conversations.forEach((element) {
-                    print(element.recentMessage.seen);
-                  });
+                  _conversations.sort((Conversation a, Conversation b) => (b.lastTimestamp - a.lastTimestamp));
 
                   return ListView.builder(
                     itemCount: data.length,
@@ -66,7 +62,8 @@ class _RecentChatsState extends State<RecentChats> {
                       Conversation conversation = _conversations[index];
                       recentMessage = conversation.recentMessage;
 
-                      print(recentMessage.seen[widget.uid]);
+                      if (conversation.lastTimestamp < 0)
+                        return Container();
 
                       return GestureDetector(
                         onTap: () {

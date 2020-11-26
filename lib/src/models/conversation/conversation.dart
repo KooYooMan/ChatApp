@@ -38,7 +38,6 @@ class Conversation {
       this.cid = '${users[0]}-${users[1]}';
       users.forEach((element) {
         if (element != currentUID){
-          // TODO: get user's displayName
           // this.displayName = element;
           this.displayName = data['members'][element];
         }

@@ -6,6 +6,7 @@ import 'package:ChatApp/src/services/firebase.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ChatApp/src/models/user/user.dart';
 
 class MessageService {
   FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
@@ -63,20 +64,66 @@ class MessageService {
     return query.onValue;
   }
 
-  void addConversation(String firstUserId, String secondUserId){
-    if (firstUserId.compareTo(secondUserId) > 0){
-      var tmp = firstUserId;
-      firstUserId = secondUserId;
-      secondUserId = tmp;
+  Future<Conversation> addConversation(User firstUser, User secondUser) async {
+    print("1st : ${firstUser.uid}");
+    print("2nd : ${secondUser.uid}");
+    if (firstUser.uid.compareTo(secondUser.uid) > 0){
+      var tmp = firstUser;
+      firstUser = secondUser;
+      secondUser = tmp;
     }
 
-    var conversationId = firstUserId + '-' + secondUserId;
-    var conversationRef = _firebaseService.getDatabaseReference(["conversations", conversationId]);
+    var conversationId = firstUser.uid + '-' + secondUser.uid;
+    var conversationRef = _firebaseService.getDatabaseReference(["conversations"]);
 
-    _firebaseService.updateDocument(conversationRef, Map<String, dynamic>.from({
+    await _firebaseService.addDocumentCustomId(conversationRef, conversationId, Map<String, dynamic>.from({
       "recentMessage": "",
-      "lastTimestamp": 0
+      "lastTimestamp": -1,
+      "members": {
+        firstUser.uid: firstUser.displayName,
+        secondUser.uid: secondUser.displayName
+      },
+      "seen": {
+        firstUser.uid: true,
+        secondUser.uid: true
+      }
     }));
+
+    var messRef = _firebaseService.getDatabaseReference(["users", firstUser.uid, "conversations", conversationId]);
+    await _firebaseService.updateDocument(messRef, Map<String, dynamic>.from({
+      "recentMessage": "",
+      "lastTimestamp": -1,
+      "members": {
+        firstUser.uid: firstUser.displayName,
+        secondUser.uid: secondUser.displayName
+      },
+      "seen": {
+        firstUser.uid: true,
+        secondUser.uid: true
+      }
+    }));
+
+    messRef = _firebaseService.getDatabaseReference(["users", secondUser.uid, "conversations", conversationId]);
+    await _firebaseService.updateDocument(messRef, Map<String, dynamic>.from({
+      "recentMessage": "",
+      "lastTimestamp": -1,
+      "members": {
+        firstUser.uid: firstUser.displayName,
+        secondUser.uid: secondUser.displayName
+      },
+      "seen": {
+        firstUser.uid: true,
+        secondUser.uid: true
+      }
+    }));
+
+
+    Conversation conversation = null;
+    await _firebaseService.getDatabaseReference(["conversations", conversationId]).once().then((snapshot){
+      conversation = Conversation.fromSnapshot(snapshot.value);
+    });
+
+    return conversation;
   }
 
   void seenConversation(Conversation conversation, String user) {
