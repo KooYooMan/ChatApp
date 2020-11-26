@@ -10,12 +10,19 @@ class Conversation {
   String cid;
   String displayName;
   ImageProvider avatarProvider;
+  bool isPrivate;
+  List<User> users = new List<User>();
+  List<Message> messageList = new List<Message>();
+  Conversation(String cid, String displayName, ImageProvider avatarProvider, bool isPrivate) {
   List<String> users = new List<String>();
   int lastTimestamp;
   Message recentMessage;
 
   Conversation(String cid) {
     this.cid = cid;
+    this.displayName = displayName;
+    this.avatarProvider = avatarProvider;
+    this.isPrivate = isPrivate;
   }
 
   Conversation.fromSnapshot(Map data){

@@ -1,12 +1,18 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-import 'content.dart';
+enum MessageType {
+  text,
+  document,
+  image,
+  audio,
+}
 
 class Message {
   String sender;
   Content content;
   DateTime sentTime;
   Map seen;
+  MessageType type;
   Message(String sender, DateTime sentTime, Content content, Map seen) {
     this.sender = sender;
     this.sentTime = sentTime;
@@ -19,6 +25,8 @@ class Message {
     this.content = Content(data['content']);
     this.sentTime = DateTime.fromMillisecondsSinceEpoch(int.parse(mid));
     this.seen = data['seen'];
+    this.type = messageType;
+    print("type = " + this.type.toString());
   }
 
   @override
