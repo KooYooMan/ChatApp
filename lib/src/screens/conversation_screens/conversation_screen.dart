@@ -92,6 +92,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
     print(gif.images.original.url);
     //TODO: send gif message from here.
   }
+  _hideInputMethod() {
+    if (_keyboardVisible == true) {
+      FocusScope.of(context).unfocus();
+    }
+  }
   Widget _buildAppBar() {
     return AppBar(
       leading: IconButton(
@@ -99,6 +104,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         color: Colors.white,
         icon: Icon(Icons.arrow_back_rounded),
         onPressed: () {
+          _hideInputMethod();
           Navigator.pop(context);
         },
       ),
@@ -122,12 +128,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
         IconButton(
           iconSize: 25.0,
           icon: Icon(Icons.call, color: Colors.white,),
-          onPressed: () {}
+          onPressed: () {
+            _hideInputMethod();
+          }
         ),
         IconButton(
           iconSize: 25.0,
           icon: Icon(Icons.info, color: Colors.white,),
           onPressed: () {
+            _hideInputMethod();
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -166,10 +175,11 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 1.0),
                   onPressed: () {
                     setState(() {
-                      _showEmojiPicker = !_showEmojiPicker;
-                      if (_showEmojiPicker == true && _keyboardVisible == true) {
+                      if (_showEmojiPicker == false && _keyboardVisible == true) {
                         FocusScope.of(context).unfocus();
                       }
+                      _showEmojiPicker = !_showEmojiPicker;
+
                     });
                   },
                   icon: Icon(Icons.face),
@@ -281,6 +291,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 w = GestureDetector(
                   onTap: () {
                     print("Tap tap");
+                    _hideInputMethod();
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => ImageScreen(widget.conversation.displayName, (currMess as ImageMessage).imageProvider))
