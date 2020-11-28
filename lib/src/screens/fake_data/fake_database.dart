@@ -97,10 +97,8 @@ class FakeDatabase {
     //Update list of messages;
     ++maxMid;
     // message.mid = "mid" + maxMid.toString();
-    message.content = Content(maxMid.toString() + " " + message.content.text);
-    message.mid = "mid" + maxMid.toString();
     if (message.type == MessageType.text) {
-      (message as TextMessage).text = convertToEmojiString(maxMid.toString() + " " + (message as TextMessage).text);
+      // (message as TextMessage).text = convertToEmojiString(maxMid.toString() + " " + (message as TextMessage).text);
     }
     messages.add(message);
     bool foundCid = false;
@@ -179,13 +177,13 @@ FakeDatabase _fakeDatabase() {
   // db.conversations.add(Conversation("cid0", "Conversation 0", db.getProvider(3)));
   // db.conversations.add(Conversation("cid1", "Conversation 1", db.getProvider(4)));
   // db.conversations.add(Conversation("cid2", "Conversation 2", db.getProvider(5)));
-  db.addMessage(TextMessage("uid1", "cid0", name1, db.getProvider(1), d2, true, smallContent));
-  db.addMessage(DocumentMessage("uid1", "cid0", name1, db.getProvider(1), d2, true, "small", "small"));
-  db.addMessage(TextMessage("uid2", "cid0", name2, db.getProvider(2), d2, true, smallContent));
-  db.addMessage(ImageMessage("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), true, "https://picsum.photos/250?image=9"));
-  db.addMessage(ImageMessage("uid1", "cid0", name1, db.getProvider(0), DateTime.now(), true, "https://picsum.photos/250?image=9"));
-  db.addMessage(ImageMessage("uid1", "cid0", name1, db.getProvider(0), DateTime.now(), true, "https://media1.giphy.com/media/3o7TKtQGIiZ6NkRCNi/giphy.gif?cid=538c7224q06k4h2lrablsjkv5oltaty7od1mxuyl7s7p06y9&rid=giphy.gif"));
-  db.addMessage(ImageMessage("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), true, "https://media1.giphy.com/media/3o7TKtQGIiZ6NkRCNi/giphy.gif?cid=538c7224q06k4h2lrablsjkv5oltaty7od1mxuyl7s7p06y9&rid=giphy.gif"));
+  // db.addMessage(TextMessage("uid1", "cid0", name1, db.getProvider(1), d2, true, smallContent));
+  // db.addMessage(DocumentMessage("uid1", "cid0", name1, db.getProvider(1), d2, true, "small", "small"));
+  // db.addMessage(TextMessage("uid2", "cid0", name2, db.getProvider(2), d2, true, smallContent));
+  // db.addMessage(ImageMessage("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), true, "https://picsum.photos/250?image=9"));
+  // db.addMessage(ImageMessage("uid1", "cid0", name1, db.getProvider(0), DateTime.now(), true, "https://picsum.photos/250?image=9"));
+  // db.addMessage(ImageMessage("uid1", "cid0", name1, db.getProvider(0), DateTime.now(), true, "https://media1.giphy.com/media/3o7TKtQGIiZ6NkRCNi/giphy.gif?cid=538c7224q06k4h2lrablsjkv5oltaty7od1mxuyl7s7p06y9&rid=giphy.gif"));
+  // db.addMessage(ImageMessage("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), true, "https://media1.giphy.com/media/3o7TKtQGIiZ6NkRCNi/giphy.gif?cid=538c7224q06k4h2lrablsjkv5oltaty7od1mxuyl7s7p06y9&rid=giphy.gif"));
 
   // db.addMessage(TextMessage("uid1", "cid0", name1, db.getProvider(1), d2, true, smallContent));
   // db.addMessage(TextMessage("uid2", "cid0", name2, db.getProvider(2), d4, true, bigContent));
@@ -199,28 +197,28 @@ FakeDatabase _fakeDatabase() {
   // db.addMessage(TextMessage("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), true, smallContent));
   // db.addMessage(ImageMessage("uid0", "cid0", name0, db.getProvider(0), DateTime.now(), true, "https://picsum.photos/250?image=9"));
 
-  db.addMessage(TextMessage("uid0", "cid1", name0, db.getProvider(0), DateTime.now(), true, smallContent));
-  db.addMessage(TextMessage("uid1", "cid1", name1, db.getProvider(1), d2, true, smallContent));
-  db.addMessage(TextMessage("uid2", "cid1", name2, db.getProvider(2), d4, true, bigContent));
-  db.addMessage(TextMessage("uid0", "cid1", name0, db.getProvider(0), d5, true, bigContent));
-  db.addMessage(TextMessage("uid2", "cid1", name2, db.getProvider(2), d5, true, bigContent));
-  db.addMessage(TextMessage("uid2", "cid1", name2, db.getProvider(2), DateTime.now(), true, smallContent));
-
-  db.addMessage(TextMessage("uid2", "cid2", name2, db.getProvider(2), d2, true, smallContent));
-  db.addMessage(TextMessage("uid2", "cid2", name2, db.getProvider(2), d4, true, bigContent));
-  db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), d5, true, bigContent));
-  db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), DateTime.now(), true, smallContent));
-  db.addMessage(TextMessage("uid1", "cid2", name1, db.getProvider(1), d2, true, smallContent));
-  db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), d5, true, bigContent));
-  db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), DateTime.now(), true, smallContent));
-  db.addMessage(TextMessage("uid2", "cid2", name2, db.getProvider(2), d4, true, bigContent));
-  db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), d5, true, bigContent));
-  db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), DateTime.now(), true, smallContent));
-
-
-  db.conversations.add(Conversation("cid0", "Conversation 0", db.getProvider(3), true));
-  db.conversations.add(Conversation("cid1", "Conversation 1", db.getProvider(4), true));
-  db.conversations.add(Conversation("cid2", "Conversation 2", db.getProvider(5), false));
+  // db.addMessage(TextMessage("uid0", "cid1", name0, db.getProvider(0), DateTime.now(), true, smallContent));
+  // db.addMessage(TextMessage("uid1", "cid1", name1, db.getProvider(1), d2, true, smallContent));
+  // db.addMessage(TextMessage("uid2", "cid1", name2, db.getProvider(2), d4, true, bigContent));
+  // db.addMessage(TextMessage("uid0", "cid1", name0, db.getProvider(0), d5, true, bigContent));
+  // db.addMessage(TextMessage("uid2", "cid1", name2, db.getProvider(2), d5, true, bigContent));
+  // db.addMessage(TextMessage("uid2", "cid1", name2, db.getProvider(2), DateTime.now(), true, smallContent));
+  //
+  // db.addMessage(TextMessage("uid2", "cid2", name2, db.getProvider(2), d2, true, smallContent));
+  // db.addMessage(TextMessage("uid2", "cid2", name2, db.getProvider(2), d4, true, bigContent));
+  // db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), d5, true, bigContent));
+  // db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), DateTime.now(), true, smallContent));
+  // db.addMessage(TextMessage("uid1", "cid2", name1, db.getProvider(1), d2, true, smallContent));
+  // db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), d5, true, bigContent));
+  // db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), DateTime.now(), true, smallContent));
+  // db.addMessage(TextMessage("uid2", "cid2", name2, db.getProvider(2), d4, true, bigContent));
+  // db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), d5, true, bigContent));
+  // db.addMessage(TextMessage("uid0", "cid2", name0, db.getProvider(0), DateTime.now(), true, smallContent));
+  //
+  //
+  // db.conversations.add(Conversation("cid0", "Conversation 0", db.getProvider(3), true));
+  // db.conversations.add(Conversation("cid1", "Conversation 1", db.getProvider(4), true));
+  // db.conversations.add(Conversation("cid2", "Conversation 2", db.getProvider(5), false));
 
 
   return db;

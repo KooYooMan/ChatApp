@@ -23,14 +23,14 @@ class FirebaseService {
     var newRef = databaseReference.push();
     newRef.set(object)
         .then((value) => print("Document Added"))
-        .catchError((error) => print("Failed to add user: $error"));
+        .catchError((error) => print("Failed to add document: $error"));
   }
 
   Future<void> addDocumentCustomId(DatabaseReference databaseReference, String id, Map object) async {
     var newRef = databaseReference.child(id);
     await newRef.set(object)
         .then((value) => print("Document Added"))
-        .catchError((error) => print("Failed to add user: $error"));
+        .catchError((error) => print("Failed to add document: $error"));
   }
   
   Future<void> setDocument(DatabaseReference documentReference, Map newObject){

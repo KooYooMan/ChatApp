@@ -31,10 +31,10 @@ class _NewConversation extends State<NewConversation> {
     _controller = TextEditingController();
   }
 
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  // void dispose() {
+    // _controller.dispose();
+    // super.dispose();
+  // }
 
   void filterSearchResults(String query) {
     if (query.isNotEmpty) {

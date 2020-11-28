@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:ChatApp/src/models/conversation/conversation.dart';
+import 'package:ChatApp/src/models/message/message.dart';
 import 'package:ChatApp/src/services/firebase.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,74 @@ import 'package:ChatApp/src/models/user/user.dart';
 class MessageService {
   FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
 
-  void addMessage(Conversation conversation, String senderId, String content){
+  void addDocumentMessage(Conversation conversation, String senderId, String url, String filename){
+    var timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    var messagesRef = _firebaseService.getDatabaseReference(["messages", conversation.cid]);
+    _firebaseService.addDocumentCustomId(messagesRef, timestamp.toString(), {
+      "type": MessageType.document.index,
+      "content": url,
+      "sender": senderId,
+      "docName": filename,
+      "seenList": []
+    });
+
+    var conversationRef = _firebaseService.getDatabaseReference(["conversations", conversation.cid]);
+    _firebaseService.updateDocument(conversationRef, Map<String, dynamic>.from({
+      "recentMessageType": MessageType.document.index,
+      "recentMessage": url,
+      "lastTimestamp": timestamp,
+      "docName": filename,
+      "lastSender": senderId
+    }));
+
+    conversation.users.forEach((uid) {
+      var userConversationRef = _firebaseService.getDatabaseReference(["users/$uid/conversations/${conversation.cid}"]);
+      _firebaseService.updateDocument(userConversationRef, Map<String, dynamic>.from({
+        "recentMessageType": MessageType.document.index,
+        "recentMessage": url,
+        "lastTimestamp": timestamp,
+        "docName": filename,
+        "lastSender": senderId
+      }));
+    });
+
+    seenNewMessage(conversation, senderId, timestamp);
+  }
+
+  void addImageMessage(Conversation conversation, String senderId, String url){
+    var timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    var messagesRef = _firebaseService.getDatabaseReference(["messages", conversation.cid]);
+    _firebaseService.addDocumentCustomId(messagesRef, timestamp.toString(), {
+      "type": MessageType.image.index,
+      "content": url,
+      "sender": senderId,
+      "seenList": []
+    });
+
+    var conversationRef = _firebaseService.getDatabaseReference(["conversations", conversation.cid]);
+    _firebaseService.updateDocument(conversationRef, Map<String, dynamic>.from({
+      "recentMessageType": MessageType.image.index,
+      "recentMessage": url,
+      "lastTimestamp": timestamp,
+      "lastSender": senderId
+    }));
+
+    conversation.users.forEach((uid) {
+      var userConversationRef = _firebaseService.getDatabaseReference(["users/$uid/conversations/${conversation.cid}"]);
+      _firebaseService.updateDocument(userConversationRef, Map<String, dynamic>.from({
+        "recentMessageType": MessageType.image.index,
+        "recentMessage": url,
+        "lastTimestamp": timestamp,
+        "lastSender": senderId
+      }));
+    });
+
+    seenNewMessage(conversation, senderId, timestamp);
+  }
+
+  void addTextMessage(Conversation conversation, String senderId, String content){
     if (content.trim() == "")
       return;
 
@@ -19,6 +87,7 @@ class MessageService {
 
     var messagesRef = _firebaseService.getDatabaseReference(["messages", conversation.cid]);
     _firebaseService.addDocumentCustomId(messagesRef, timestamp.toString(), {
+      "type": MessageType.text.index,
       "content": content,
       "sender": senderId,
       "seenList": []
@@ -26,6 +95,7 @@ class MessageService {
 
     var conversationRef = _firebaseService.getDatabaseReference(["conversations", conversation.cid]);
     _firebaseService.updateDocument(conversationRef, Map<String, dynamic>.from({
+      "recentMessageType": MessageType.text.index,
       "recentMessage": content,
       "lastTimestamp": timestamp,
       "lastSender": senderId
@@ -34,12 +104,17 @@ class MessageService {
     conversation.users.forEach((uid) {
       var userConversationRef = _firebaseService.getDatabaseReference(["users/$uid/conversations/${conversation.cid}"]);
       _firebaseService.updateDocument(userConversationRef, Map<String, dynamic>.from({
+        "recentMessageType": MessageType.text.index,
         "recentMessage": content,
         "lastTimestamp": timestamp,
         "lastSender": senderId
       }));
     });
 
+    seenNewMessage(conversation, senderId, timestamp);
+  }
+
+  void seenNewMessage(Conversation conversation, String senderId, int timestamp){
     var ref = _firebaseService.getDatabaseReference(["conversations", conversation.cid, "seen"]);
 
     conversation.users.forEach((user) {
@@ -52,7 +127,7 @@ class MessageService {
           user: true
         }));
     });
-    
+
     var messRef = _firebaseService.getDatabaseReference(["messages", conversation.cid, timestamp.toString(), "seen"]);
     _firebaseService.setDocument(messRef, {
       senderId: true
@@ -65,8 +140,6 @@ class MessageService {
   }
 
   Future<Conversation> addConversation(User firstUser, User secondUser) async {
-    print("1st : ${firstUser.uid}");
-    print("2nd : ${secondUser.uid}");
     if (firstUser.uid.compareTo(secondUser.uid) > 0){
       var tmp = firstUser;
       firstUser = secondUser;
@@ -76,8 +149,17 @@ class MessageService {
     var conversationId = firstUser.uid + '-' + secondUser.uid;
     var conversationRef = _firebaseService.getDatabaseReference(["conversations"]);
 
+    Conversation conversation = null;
+    await _firebaseService.getDatabaseReference(["conversations", conversationId]).once().then((snapshot){
+      conversation = Conversation.fromSnapshot(snapshot.value);
+    });
+
+    if (conversation != null)
+      return conversation;
+
     await _firebaseService.addDocumentCustomId(conversationRef, conversationId, Map<String, dynamic>.from({
       "recentMessage": "",
+      "recentMessageType": 0,
       "lastTimestamp": -1,
       "members": {
         firstUser.uid: firstUser.displayName,
@@ -93,6 +175,7 @@ class MessageService {
     await _firebaseService.updateDocument(messRef, Map<String, dynamic>.from({
       "recentMessage": "",
       "lastTimestamp": -1,
+      "recentMessageType": 0,
       "members": {
         firstUser.uid: firstUser.displayName,
         secondUser.uid: secondUser.displayName
@@ -107,6 +190,7 @@ class MessageService {
     await _firebaseService.updateDocument(messRef, Map<String, dynamic>.from({
       "recentMessage": "",
       "lastTimestamp": -1,
+      "recentMessageType": 0,
       "members": {
         firstUser.uid: firstUser.displayName,
         secondUser.uid: secondUser.displayName
@@ -117,9 +201,8 @@ class MessageService {
       }
     }));
 
-
-    Conversation conversation = null;
     await _firebaseService.getDatabaseReference(["conversations", conversationId]).once().then((snapshot){
+      print(snapshot.value);
       conversation = Conversation.fromSnapshot(snapshot.value);
     });
 

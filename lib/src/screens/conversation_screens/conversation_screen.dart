@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:ChatApp/src/models/message/document_message.dart';
+import 'package:ChatApp/src/models/message/text_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -24,6 +26,8 @@ import 'package:get_it/get_it.dart';
 import 'package:ChatApp/src/services/auth_service.dart';
 import 'package:ChatApp/src/services/message_service.dart';
 import 'package:ChatApp/src/services/storage_service.dart';
+
+import 'package:path/path.dart' as pathlib;
 
 
 
@@ -62,7 +66,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
           if (_keyboardVisible == true && _showEmojiPicker == true) {
             _showEmojiPicker = false;
           }
-          print(_keyboardVisible);
         });
       }
     );
@@ -78,12 +81,30 @@ class _ConversationScreenState extends State<ConversationScreen> {
         print("NULL");
       }
     });
+
+    String fileName = "${DateTime.now().millisecondsSinceEpoch}.png";
+
+    await _storageService.uploadFile(_image, "${widget.conversation.cid}/${fileName}");
+
+    _storageService.getDownloadURL("${widget.conversation.cid}/${fileName}").then((url){
+      _messageService.addImageMessage(widget.conversation, _authService.getCurrentUID(), url);
+    });
   }
+
+
   _imageFromCamera() async {
     var image = await _imagePicker.getImage(source: ImageSource.camera);
     setState(() {
       print(image.path);
       _image = File(image.path);
+    });
+
+    String fileName = "${DateTime.now().millisecondsSinceEpoch}.png";
+
+    await _storageService.uploadFile(_image, "${widget.conversation.cid}/${fileName}");
+
+    _storageService.getDownloadURL("${widget.conversation.cid}/${fileName}").then((url){
+      _messageService.addImageMessage(widget.conversation, _authService.getCurrentUID(), url);
     });
   }
 
@@ -92,13 +113,22 @@ class _ConversationScreenState extends State<ConversationScreen> {
     setState(() {
       _files = files;
     });
+    _files.forEach((file) async {
+      String fileName = pathlib.basename(file.path);
+      await _storageService.uploadFile(file, "${widget.conversation.cid}/${fileName}");
+
+      _storageService.getDownloadURL("${widget.conversation.cid}/${fileName}").then((url){
+        _messageService.addDocumentMessage(widget.conversation, _authService.getCurrentUID(), url, fileName);
+      });
+    });
   }
 
   _giphyPicker() async {
     final gif = await GiphyPicker.pickGif(context: context, apiKey: gifAPIKey);
     print(gif.images.original.url);
-    //TODO: send gif message from here.
+    _messageService.addImageMessage(widget.conversation, _authService.getCurrentUID(), gif.images.original.url);
   }
+
   Widget _buildAppBar() {
     return AppBar(
       leading: IconButton(
@@ -138,7 +168,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => ConversationInfoScreen(widget.uid, widget.conversation)
+                builder: (_) => ConversationInfoScreen(_authService.getCurrentUID(), widget.conversation) // TODO: Check if right person
               )
             );
           }
@@ -211,7 +241,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                       return;
                     }
                     print(_textEditingController.text);
-                    //TODO: send message to
+                    String content = _textEditingController.text;
+                    _messageService.addTextMessage(widget.conversation, _authService.getCurrentUID(), content);
                     _textEditingController.clear();
                   },
                   icon: Icon(Icons.send, color: Colors.red,),
@@ -262,14 +293,19 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
   Widget _buildMessageListWidget() {
     return StreamBuilder(
-      stream: _messageService.getMessages(cid),
+      stream: _messageService.getMessages(widget.conversation.cid),
       builder: (context, snapshot) {
         List<Message> list = [];
         if (snapshot.hasData) {
           Map data = snapshot.data.snapshot.value;
           if (data != null)
             data.forEach((key, value) {
-              list.add(Message.fromSnapshot(key, value));
+              if (value['type'] == MessageType.text.index)
+                list.add(TextMessage.fromSnapshot(key, value));
+              if (value['type'] == MessageType.image.index)
+                list.add(ImageMessage.fromSnapshot(key, value));
+              if (value['type'] == MessageType.document.index)
+                list.add(DocumentMessage.fromSnapshot(key, value));
             });
           list.sort((Message a, Message b) => (a.sentTime.millisecondsSinceEpoch - b.sentTime.millisecondsSinceEpoch));
         }
@@ -289,7 +325,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               Widget w;
               bool showName = false;
               bool showTime = false;
-              w = MessageWidget(widget.conversation.messageList[currIdx], isSentByMe);
+              w = MessageWidget(list[currIdx], isSentByMe);
               if (currMess.type == MessageType.image) {
                 w = GestureDetector(
                   onTap: () {
@@ -326,9 +362,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     child: Text('Video call'),
                   ),
                 ],
-                child: CircularImage(currMess.avatarProvider),
+                child: CircularImage(NetworkImage(_authService.getCurrentUser().photoURL)),  // TODO : get exact image
               );
-              if (((nextIdx < length && widget.conversation.messageList[nextIdx].uid != currMess.uid) || nextIdx >= length)) {
+              if (((nextIdx < length && list[nextIdx].sender != currMess.sender) || nextIdx >= length)) {
                 if (isSentByMe) {
                   w = Column(
                     children: [

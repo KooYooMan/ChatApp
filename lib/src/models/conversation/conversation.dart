@@ -1,19 +1,19 @@
+import 'package:ChatApp/src/models/message/document_message.dart';
+import 'package:ChatApp/src/models/message/image_message.dart';
 import 'package:ChatApp/src/models/message/message.dart';
+import 'package:ChatApp/src/models/message/text_message.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
-import 'package:ChatApp/src/models/message/content.dart';
-import 'package:ChatApp/src/models/message/content.dart';
 import 'package:ChatApp/src/services/auth_service.dart';
-import 'package:ChatApp/src/services/storage_service.dart';
 
 class Conversation {
   String cid;
   String displayName;
+  String lastSender;
   ImageProvider avatarProvider;
   bool isPrivate;
-  List<User> users = new List<User>();
+  // List<User> users = new List<User>();
   List<Message> messageList = new List<Message>();
-  Conversation(String cid, String displayName, ImageProvider avatarProvider, bool isPrivate) {
   List<String> users = new List<String>();
   int lastTimestamp;
   Message recentMessage;
@@ -29,8 +29,38 @@ class Conversation {
     AuthService authService = GetIt.I.get<AuthService>();
 
     String currentUID = authService.getCurrentUID();
+    this.lastSender = data['lastSender'];
 
-    this.recentMessage = Message(data["lastSender"], DateTime.fromMillisecondsSinceEpoch(data['lastTimestamp']), new Content(data['recentMessage']), data['seen']);
+    switch (MessageType.values[data["recentMessageType"]]) {
+      case MessageType.text:
+        {
+          recentMessage = TextMessage(data["lastSender"],
+              DateTime.fromMillisecondsSinceEpoch(data['lastTimestamp']),
+              data['seen'],
+              data['recentMessage']);
+          break;
+        }
+      case MessageType.image:
+        {
+          recentMessage = ImageMessage(data["lastSender"],
+              DateTime.fromMillisecondsSinceEpoch(data['lastTimestamp']),
+              data['seen'],
+              data['recentMessage']);
+          break;
+        }
+      case MessageType.document:
+        {
+          recentMessage = DocumentMessage(data["lastSender"],
+              DateTime.fromMillisecondsSinceEpoch(data['lastTimestamp']),
+              data['seen'],
+              data['docName'],
+              data['recentMessage']);
+          break;
+        }
+      default:
+        break;
+    }
+
     this.lastTimestamp = data['lastTimestamp'];
 
     data['members'].forEach((key, value) {

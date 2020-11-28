@@ -61,6 +61,7 @@ class _RecentChatsState extends State<RecentChats> {
                     itemBuilder: (BuildContext context, int index) {
                       Conversation conversation = _conversations[index];
                       recentMessage = conversation.recentMessage;
+                      print(recentMessage.sender);
 
                       if (conversation.lastTimestamp < 0)
                         return Container();
@@ -68,10 +69,6 @@ class _RecentChatsState extends State<RecentChats> {
                       return GestureDetector(
                         onTap: () {
                           setState(() {
-                            recentMessage = Message(widget.uid,
-                                DateTime.fromMillisecondsSinceEpoch(conversation.lastTimestamp),
-                                conversation.recentMessage.content,
-                                conversation.recentMessage.seen);
                             recentMessage.seen[widget.uid] = true;
                           });
                           _messageService.seenConversation(conversation, widget.uid);
@@ -81,108 +78,110 @@ class _RecentChatsState extends State<RecentChats> {
                                 builder: (_) =>
                                     ConversationScreen(conversation)
                             ),
-                            child: Container(
-                              margin: EdgeInsets.only(
-                                  top: 5.0, bottom: 5.0, right: 10.0),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10.0, vertical: 10.0),
-                              decoration: BoxDecoration(
-                                color: Color(0xFFFFEFEE),
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(20.0),
-                                  bottomRight: Radius.circular(20.0),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                          );
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(
+                            top: 5.0, bottom: 5.0, right: 10.0),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10.0, vertical: 10.0),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFFFEFEE),
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(20.0),
+                              bottomRight: Radius.circular(20.0),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Row(
                                 children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      Stack(
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 25.0,
-                                            backgroundImage: conversation.avatarProvider,
-                                          ),
-                                          Positioned(
-                                              right: 0.0,
-                                              bottom: 0.0,
-                                              child: new DotsIndicator(
-                                                dotsCount: 1,
-                                                position: 0,
-                                                decorator: DotsDecorator(
-                                                  activeColor: Colors.green,
-                                                  shape: const Border(),
-                                                  activeShape:
-                                                      RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      5.0)),
-                                                ),
-                                              ))
-                                        ],
+                                  Stack(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 25.0,
+                                        backgroundImage: conversation.avatarProvider,
                                       ),
-                                      SizedBox(width: 10.0),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            conversation.displayName,
-                                            style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 15.0,
-                                              fontWeight: FontWeight.bold,
+                                      Positioned(
+                                        right: 0.0,
+                                        bottom: 0.0,
+                                        child: new DotsIndicator(
+                                          dotsCount: 1,
+                                          position: 0,
+                                          decorator: DotsDecorator(
+                                            activeColor: Colors.green,
+                                            shape: const Border(),
+                                            activeShape:
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                BorderRadius
+                                                  .circular(5.0)
                                             ),
                                           ),
-                                          SizedBox(height: 5.0),
-                                          Container(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.45,
-                                            child: Text(chat.getContent() ,
-                                                style: TextStyle(
-                                                  color: Colors.blueGrey,
-                                                  fontSize:
-                                                      chat.seen ? 15.0 : 16.0,
-                                                  fontWeight: chat.seen
-                                                      ? FontWeight.normal
-                                                      : FontWeight.bold,
-                                                ),
-                                                overflow:
-                                                    TextOverflow.ellipsis),
-                                          ),
-                                        ],
-                                      ),
+                                      ))
                                     ],
                                   ),
+                                  SizedBox(width: 10.0),
                                   Column(
+                                    crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
-                                        DateFormat('hh:mm a').format(chat.sentTime),
+                                        conversation.displayName,
                                         style: TextStyle(
                                           color: Colors.grey,
                                           fontSize: 15.0,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
+                                      SizedBox(height: 5.0),
+                                      Container(
+                                        width: MediaQuery.of(context)
+                                          .size
+                                            .width * 0.45,
+                                        child: Text(recentMessage.toString() ,
+                                          style: TextStyle(
+                                            color: Colors.blueGrey,
+                                            fontSize:
+                                              recentMessage.seen[widget.uid] ? 15.0 : 16.0,
+                                              fontWeight: recentMessage.seen[widget.uid]
+                                                ? FontWeight.normal
+                                                : FontWeight.bold,
+                                          ),
+                                          overflow:
+                                            TextOverflow.ellipsis
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ],
                               ),
-                            ),
-                          );
-                        },
+                              Column(
+                                children: <Widget>[
+                                  Text(
+                                    DateFormat('hh:mm a').format(recentMessage.sentTime),
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                       );
+                    },
+                  );
                   }
+                else{
+                  if (_conversations.isEmpty)
+                    return Container();
                 }
-              },
-            ),
-          )
-      ),
-    ));
-  }
+                }
+              )))));
+    }
 }

@@ -4,14 +4,18 @@ import 'message.dart';
 
 class DocumentMessage extends Message {
   String documentName;
-  String documentURL;
-  DocumentMessage(String uid, String cid, String userDisplayName, ImageProvider avatarProvider, DateTime sentTime, bool seen, String documentName, String documentURL)
-      : super(uid, cid, userDisplayName, avatarProvider, sentTime, seen, MessageType.document) {
-    this.documentURL = documentURL;
+
+  DocumentMessage(String uid, DateTime sentTime, Map seen, String documentName, String documentURL)
+      : super(uid, sentTime, seen, MessageType.document, documentURL) {
     this.documentName = documentName;
   }
+
+  DocumentMessage.fromSnapshot(String mid, Map data): super.fromSnapshot(mid, data) {
+    this.documentName = data['docName'];
+  }
+
   @override
-  String getContent() {
-    return this.documentURL;
+  String toString() {
+    return "File";
   }
 }

@@ -1,8 +1,4 @@
 import 'package:ChatApp/src/screens/auth_screens/sign_in_screen.dart';
-import 'package:ChatApp/src/screens/conversation_screens/add_member_screen.dart';
-import 'package:ChatApp/src/screens/conversation_screens/conversation_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:ChatApp/src/screens/conversation_screens/report_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ChatApp/src/screens/main_screen/main_screen.dart';
@@ -12,9 +8,7 @@ import 'package:ChatApp/src/services/firebase.dart';
 import 'package:ChatApp/src/services/auth_service.dart';
 import 'package:ChatApp/src/services/message_service.dart';
 import 'package:ChatApp/src/services/storage_service.dart';
-
-import 'package:ChatApp/src/screens/test_firebase/test_firebase_widget.dart';
-import 'package:ChatApp/src/screens/conversation_screens/conversation_screen.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 GetIt locator = GetIt.instance;
 
@@ -28,16 +22,16 @@ void setupSingletons() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  WidgetsFlutterBinding.ensureInitialized();
+  await FlutterDownloader.initialize();
   setupSingletons();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   AuthService _authService = GetIt.I.get<AuthService>();
-  StorageService _storageService = GetIt.I.get<StorageService>();
   String uid = "";
-  // final user = Provider.of<User>;
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     uid = _authService.getCurrentUID();

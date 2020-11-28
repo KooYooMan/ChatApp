@@ -1,9 +1,14 @@
+import 'dart:io';
+
 import 'package:ChatApp/src/models/message/document_message.dart';
 import 'package:ChatApp/src/models/message/image_message.dart';
 import 'package:ChatApp/src/screens/conversation_screens/image_view_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:ChatApp/src/models/message/message.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MessageWidget extends StatefulWidget {
   MessageWidget(this.message, this.isSentByMe);
@@ -14,11 +19,18 @@ class MessageWidget extends StatefulWidget {
 }
 
 class _MessageWidgetState extends State<MessageWidget> {
+  Future<String> _findLocalPath() async {
+    final platform = Theme.of(context).platform;
+
+    final directory = platform == TargetPlatform.android
+        ? await getExternalStorageDirectory()
+        : await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
 
   Widget _buildDocumentMessage() {
     Color decorationColor = (widget.isSentByMe) ? Colors.red : Colors.grey[300];
     Color textColor = (widget.isSentByMe) ? Colors.white : Colors.black;
-    print((widget.message as DocumentMessage).documentName);
     return Container(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
@@ -42,7 +54,6 @@ class _MessageWidgetState extends State<MessageWidget> {
                     color: textColor
                   ),
                   recognizer: TapGestureRecognizer()..onTap = () {
-                    print((widget.message as DocumentMessage).documentURL);
                     showDialog(
                       context: context,
                       builder: (_) => AlertDialog(
@@ -50,8 +61,21 @@ class _MessageWidgetState extends State<MessageWidget> {
                         content: Text("Do you accept?"),
                         actions: [
                           FlatButton(
-                            onPressed: () {
-                              //TODO: download file
+                            onPressed: () async {
+                              var _localPath = (await _findLocalPath()) + '/Downloads';
+
+                              final savedDir = Directory(_localPath);
+                              bool hasExisted = await savedDir.exists();
+                              if (!hasExisted) {
+                                savedDir.create();
+                              }
+
+                              final taskId = await FlutterDownloader.enqueue(
+                                url: (widget.message as DocumentMessage).content,
+                                savedDir: _localPath,
+                                showNotification: true, // show download progress in status bar (for Android)
+                                openFileFromNotification: true, // click on notification to open downloaded file (for Android)
+                              );
                               Navigator.of(context, rootNavigator: true).pop();
                             },
                             child: Text("Yes"),
@@ -79,7 +103,6 @@ class _MessageWidgetState extends State<MessageWidget> {
     );
   }
   Widget _buildImageMessage() {
-    print("ImageWidget\n");
     return ClipRRect(
       borderRadius: BorderRadius.circular(15.0),
       child: Image(
@@ -97,7 +120,7 @@ class _MessageWidgetState extends State<MessageWidget> {
         maxWidth: MediaQuery.of(context).size.width / 3 * 2,
       ),
       child: Text(
-        widget.message.getContent(),
+        widget.message.toString(),
         style: TextStyle(color: textColor),
       ),
       padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
@@ -108,7 +131,6 @@ class _MessageWidgetState extends State<MessageWidget> {
     );
   }
   Widget _buildMessage() {
-    print(widget.message.type);
     if (widget.message.type == MessageType.image) {
       return _buildImageMessage();
     }
