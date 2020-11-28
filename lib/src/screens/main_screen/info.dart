@@ -1,4 +1,4 @@
-import 'package:ChatApp/src/screens/auth_screens/sign_in_screen.dart';
+import 'package:ChatApp/src/screens/auth_screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ChatApp/src/services/auth_service.dart';
@@ -41,10 +41,10 @@ class Info extends StatelessWidget {
                 Navigator.push(context, MaterialPageRoute(
                   builder: (_) => Material(
                     child: Scaffold(
-                        resizeToAvoidBottomInset: false,
-                        body: Container(
-                            child: SignInScreen()
-                        )
+                      resizeToAvoidBottomInset: false,
+                      body: Container(
+                        child: AuthScreen()
+                      )
                     ),
                   ),
                 ),);

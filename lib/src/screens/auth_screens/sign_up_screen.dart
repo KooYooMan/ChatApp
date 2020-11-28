@@ -1,104 +1,186 @@
+import 'package:ChatApp/src/screens/main_screen/main_screen.dart';
+import 'package:ChatApp/src/services/auth_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'helpers/helpers.dart';
+import 'widgets/input_fields.dart';
+import 'widgets/buttons.dart';
+import 'package:toast/toast.dart';
 
-import 'widgets/auth_app_bar.dart';
-import 'styles/font_styles.dart';
-import 'styles/input_decoration.dart';
+
 class SignUpScreen extends StatefulWidget {
+  SignUpScreen({this.switchPage});
+  final Function() switchPage;
+
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  TextEditingController userNameTextEditingController = new TextEditingController();
+  final formKeySignUp = GlobalKey<FormState>();
+  AuthService _authService = GetIt.I.get<AuthService>();
   TextEditingController emailTextEditingController = new TextEditingController();
+  TextEditingController usernameTextEditingController = new TextEditingController();
   TextEditingController passwordTextEditingController = new TextEditingController();
+  TextEditingController confirmPasswordTextEditingController = new TextEditingController();
+  String _email;
+  String _username;
+  String _password;
+  String _confirmPassword;
+  bool _keyboardVisible = false;
+
+  void initState() {
+    print("signUpScreen");
+    super.initState();
+
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        setState(() {
+          _keyboardVisible = visible;
+          // print("Keyboard State hanged : $visible");
+        });
+      },
+    );
+  }
+
+  bool isLoading = false;
+  Future<void> _signUp() async{
+    if(formKeySignUp.currentState.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+      _email = emailTextEditingController.text;
+      _password = passwordTextEditingController.text;
+      await _authService.signUp(_email, _password)
+          .catchError((error) {
+        Toast.show("Sign up with error $error", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        return Future.error(error);
+      });
+      Toast.show("Sign up successful", context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      widget.switchPage();
+    }
+  }
+
+
+  Widget _buildForm() {
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 7),
+        child: Form(
+          key: formKeySignUp,
+          child: Column(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.only(bottom: 20),
+                child: Text(
+                  "Create a New Account",
+                  style: TextStyle(
+                      fontSize: 20
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10.0),
+                child: InputField(
+                  icon: Icons.email,
+                  hint: "Enter Email...",
+                  controller: emailTextEditingController,
+                  formKey: formKeySignUp,
+                  validator: (value) {
+                    return emailValidator(value);
+                  },
+                ),
+              ),
+              SizedBox(height: 15,),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10.0),
+                child: InputField(
+                  icon: Icons.person,
+                  hint: "Enter your display name",
+                  controller: usernameTextEditingController,
+                  formKey: formKeySignUp,
+                  validator: (value) {
+                    return usernameValidator(value);
+                  },
+                ),
+              ),
+              SizedBox(height: 15.0,),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10.0),
+                child: HiddenInputField(
+                  icon: Icons.vpn_key,
+                  hint: "Enter Password...",
+                  controller: passwordTextEditingController,
+                  formKey: formKeySignUp,
+                  validator: (value) {
+                    return passwordValidator(value, value);
+                  },
+                ),
+              ),
+              SizedBox(height: 15),
+              Container(
+                margin: EdgeInsets.symmetric(horizontal: 10.0),
+                child: HiddenInputField(
+                  icon: Icons.vpn_key,
+                  hint: "Confirm Password...",
+                  controller: confirmPasswordTextEditingController,
+                  formKey: formKeySignUp,
+                  validator: (value) {
+                    return passwordValidator(value, passwordTextEditingController.text);
+                  }
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _buildButtons() {
+    return Column(
+      children: <Widget>[
+        GestureDetector(
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 10.0),
+            child: PrimaryButton(
+              text: "Create Account",
+            ),
+          ),
+          onTap: (){
+            _signUp();
+          },
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        GestureDetector(
+          onTap: widget.switchPage,
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 10.0),
+            child: NeOutlineButton(
+              text: "Back To Login",
+            ),
+          ),
+        )
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: authAppBar(context),
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height - 50 ,
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: userNameTextEditingController,
-                  style: simpleTextFieldStyle(),
-                  decoration: textFillInputDecoration("username"),
-                ),
-                TextField(
-                  controller: emailTextEditingController,
-                  style: simpleTextFieldStyle(),
-                  decoration: textFillInputDecoration("email"),
-                ),
-                TextField(
-                  controller: passwordTextEditingController,
-                  style: simpleTextFieldStyle(),
-                  decoration: textFillInputDecoration("password"),
-                ),
-                SizedBox(height: 8),
-                Container(
-                    alignment: Alignment.centerRight,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: Text("Forget password?", style: simpleTextFieldStyle(),),
-                    )
-                ),
-                SizedBox(height: 8,),
-                Container(
-                  alignment: Alignment.center,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: [
-                            const Color(0xff007EF4),
-                            const Color(0xff2A75BC)
-                          ]
-                      ),
-                      borderRadius: BorderRadius.circular(30)
-
-                  ),
-                  child: Text("Sign Up", style: simpleMediumTextStyle(),),
-                ),
-
-                SizedBox(height: 16,),
-                Container(
-                  alignment: Alignment.center,
-                  width: MediaQuery.of(context).size.width,
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30)
-
-                  ),
-                  child: Text("Sign Up with Google", style: TextStyle(
-                      color: Colors.black87,
-                      fontSize: 17
-                  ),),
-                ),
-
-                SizedBox(height: 16,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Already have an account? ", style: simpleMediumTextStyle()),
-                    Text("Sign In Now", style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        decoration: TextDecoration.underline
-                    ),)
-                  ],
-                ),
-                SizedBox(height: 50,)
-              ],
-            ),
-          ),
+    return SafeArea(
+      child: Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            _buildForm(),
+            (_keyboardVisible == false) ? Container(
+              margin: EdgeInsets.only(bottom: 10.0),
+              child: _buildButtons()
+            ) : Container(),
+          ],
         ),
       ),
     );

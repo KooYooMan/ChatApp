@@ -45,7 +45,7 @@ dependencies:
   downloads_path_provider: ^0.1.0
   flushbar: ^1.9.0
   keyboard_visibility: ^0.5.6
-
+  toast: ^0.1.5
   firebase_database: 4.3.0
   permission_handler: ^5.0.1+1
 

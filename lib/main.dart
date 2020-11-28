@@ -1,4 +1,4 @@
-import 'package:ChatApp/src/screens/auth_screens/sign_in_screen.dart';
+import 'package:ChatApp/src/screens/auth_screens/auth_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ChatApp/src/screens/main_screen/main_screen.dart';
@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: Container(
-            child: SignInScreen()
+            child: AuthScreen()
           )
         ),
       ) : MainScreen()
