@@ -1,6 +1,5 @@
 import 'package:ChatApp/src/screens/auth_screens/sign_in_screen.dart';
 import 'package:ChatApp/src/screens/auth_screens/sign_up_screen.dart';
-import 'package:ChatApp/src/screens/main_screen/main_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';

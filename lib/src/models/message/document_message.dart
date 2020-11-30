@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import 'message.dart';
 
 class DocumentMessage extends Message {

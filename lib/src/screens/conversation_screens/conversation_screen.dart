@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:ChatApp/src/models/message/document_message.dart';
 import 'package:ChatApp/src/models/message/text_message.dart';
+import 'package:ChatApp/src/screens/conversation_screens/call_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -23,6 +24,7 @@ import 'package:giphy_picker/giphy_picker.dart';
 import 'image_view_screen.dart';
 
 import 'package:get_it/get_it.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:ChatApp/src/services/auth_service.dart';
 import 'package:ChatApp/src/services/message_service.dart';
 import 'package:ChatApp/src/services/storage_service.dart';
@@ -129,6 +131,19 @@ class _ConversationScreenState extends State<ConversationScreen> {
     _messageService.addImageMessage(widget.conversation, _authService.getCurrentUID(), gif.images.original.url);
   }
 
+  Map<Permission, PermissionStatus> _statuses = Map<Permission, PermissionStatus>();
+  Future<void> _handleCameraAndMic() async {
+    _statuses = await [Permission.camera, Permission.microphone].request();
+  }
+  Future<void> _onJoin() async {
+    await _handleCameraAndMic();
+    //TODO: add an entry agoraID, avatar. => get user avatar when disable video.
+    //TODO: maintain map<agoraID, bool> camera, => camera status of agoraID.
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CallScreen(channelName: widget.conversation.cid, statuses: _statuses,))
+    );
+  }
   Widget _buildAppBar() {
     return AppBar(
       leading: IconButton(
@@ -159,7 +174,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         IconButton(
           iconSize: 25.0,
           icon: Icon(Icons.call, color: Colors.white,),
-          onPressed: () {}
+          onPressed: () => _onJoin(),
         ),
         IconButton(
           iconSize: 25.0,
