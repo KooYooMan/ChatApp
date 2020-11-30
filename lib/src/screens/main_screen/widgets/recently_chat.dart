@@ -61,7 +61,7 @@ class _RecentChatsState extends State<RecentChats> {
                     itemBuilder: (BuildContext context, int index) {
                       Conversation conversation = _conversations[index];
                       recentMessage = conversation.recentMessage;
-                      print(recentMessage.sender);
+                      print(conversation.isPrivate);
 
                       if (conversation.lastTimestamp < 0)
                         return Container();

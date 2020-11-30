@@ -14,6 +14,6 @@ class ImageMessage extends Message {
 
   @override
   String toString() {
-    return "Image📷📷📷";
+    return "Image 📷";
   }
 }

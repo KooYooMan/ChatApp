@@ -109,6 +109,8 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    bool test = true;
+    // return Container();
     return SafeArea(
       child: Scaffold(
         appBar: _buildAppBar(),

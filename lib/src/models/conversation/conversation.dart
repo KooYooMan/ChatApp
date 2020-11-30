@@ -18,18 +18,19 @@ class Conversation {
   int lastTimestamp;
   Message recentMessage;
 
-  Conversation(String cid) {
-    this.cid = cid;
-    this.displayName = displayName;
-    this.avatarProvider = avatarProvider;
-    this.isPrivate = isPrivate;
-  }
+  // Conversation(String cid) {
+  //   this.cid = cid;
+  //   this.displayName = displayName;
+  //   this.avatarProvider = avatarProvider;
+  //   this.isPrivate = isPrivate;
+  // }
 
   Conversation.fromSnapshot(Map data){
     AuthService authService = GetIt.I.get<AuthService>();
 
     String currentUID = authService.getCurrentUID();
     this.lastSender = data['lastSender'];
+    this.isPrivate = false; // TODO : Private conversation
 
     switch (MessageType.values[data["recentMessageType"]]) {
       case MessageType.text:

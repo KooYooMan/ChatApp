@@ -51,9 +51,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       setState(() {
         isLoading = true;
       });
+      _username = usernameTextEditingController.text;
       _email = emailTextEditingController.text;
       _password = passwordTextEditingController.text;
-      await _authService.signUp(_email, _password)
+      await _authService.signUp(_email, _password, _username)
           .catchError((error) {
         Toast.show("Sign up with error $error", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         return Future.error(error);

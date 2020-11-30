@@ -65,7 +65,7 @@ class AuthService {
     return result;
   }
 
-  Future<String> signUp(String email, String password) async {
+  Future<String> signUp(String email, String password, String username) async {
     try {
       UserCredential result = await _firebaseAuth
           .createUserWithEmailAndPassword(
@@ -73,12 +73,13 @@ class AuthService {
 
       DatabaseReference users = _firebaseService.getDatabaseReference(["users"]);
       _firebaseService.addDocumentCustomId(users, result.user.uid, {
-        "isOnline": true
+        "isOnline": true,
+        "displayName": username
       });
 
       // set default avatar
       _storageService.getDownloadURL('Anonymous-Avatar.png').then((url){
-        getCurrentUser().updateProfile(photoURL: url, displayName: email);
+        getCurrentUser().updateProfile(photoURL: url, displayName: username);
         var ref = _firebaseService.getDatabaseReference(["users", result.user.uid]);
         _firebaseService.updateDocument(ref, Map<String, dynamic>.from({
           "photoURL": url

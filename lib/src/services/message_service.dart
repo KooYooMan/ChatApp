@@ -151,7 +151,8 @@ class MessageService {
 
     Conversation conversation = null;
     await _firebaseService.getDatabaseReference(["conversations", conversationId]).once().then((snapshot){
-      conversation = Conversation.fromSnapshot(snapshot.value);
+      if (snapshot.value != null)
+        conversation = Conversation.fromSnapshot(snapshot.value);
     });
 
     if (conversation != null)

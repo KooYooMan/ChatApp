@@ -42,7 +42,7 @@ class _NewConversation extends State<NewConversation> {
       allCopy.addAll(userList);
       List<User> filterList = List<User>();
       allCopy.forEach((element) {
-        if (element.displayName.contains(query)) {
+        if (element.displayName.contains(query) && element.uid != _authService.getCurrentUID()) {
           filterList.add(element);
         }
       });
