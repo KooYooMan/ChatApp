@@ -9,8 +9,7 @@ const APP_ID = '0179d09fb6db495f913653715dc0b7f2';
 
 class CallScreen extends StatefulWidget {
   final String channelName;
-  final Map<Permission, PermissionStatus> statuses;
-  CallScreen({this.channelName, this.statuses});
+  CallScreen({this.channelName});
   @override
   _CallScreenState createState() => _CallScreenState();
 }
@@ -110,8 +109,13 @@ class _CallScreenState extends State<CallScreen> {
 
 
   List<Widget> _getRenderViews() {
-    final List<StatefulWidget> list = [];
+    final List<Widget> list = [];
     list.add(RtcLocalView.SurfaceView());
+    //list.add(_buildReplacementWidget(
+    //  NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'),
+    //  'Nghi4 Ph411'
+    //));
+    //fake Replacement widget.
     _users.forEach((int uid) => list.add(RtcRemoteView.SurfaceView(uid: uid)));
     return list;
   }
@@ -167,7 +171,39 @@ class _CallScreenState extends State<CallScreen> {
       //TODO: send event turn off camera.
     }
   }
-
+  // _buildReplacementWidget return widget replacing remote view when users turn off their camera.
+  Widget _buildReplacementWidget(ImageProvider avatarProvider, String name) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          width: 2.0,
+          color: Colors.cyan,
+        )
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  width: 2.0,
+                  color: Colors.cyan,
+                ),
+              ),
+              child: CircleAvatar(
+                backgroundImage: avatarProvider,
+                radius: MediaQuery.of(context).size.width / 10,
+              ),
+            ),
+            Text(name, style: TextStyle(fontSize: 15.0, color: Colors.black),),
+          ],
+        ),
+      ),
+    );
+  }
   Widget _buildToolbar() {
     IconData cameraIconData;
     if (_videoStatus == VideoStatus.off) {
@@ -280,6 +316,7 @@ class _CallScreenState extends State<CallScreen> {
     }
     return Container();
   }
+  bool _showToolBar = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -287,8 +324,15 @@ class _CallScreenState extends State<CallScreen> {
       body: Center(
         child: Stack(
           children: <Widget>[
-            _buildViews(),
-            _buildToolbar(),
+            GestureDetector(
+              child: _buildViews(),
+              onTap: () {
+                setState(() {
+                  _showToolBar = !_showToolBar;
+                });
+              }
+            ),
+            (_showToolBar) ? _buildToolbar() : Container(),
           ],
         ),
       ),

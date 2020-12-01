@@ -131,17 +131,17 @@ class _ConversationScreenState extends State<ConversationScreen> {
     _messageService.addImageMessage(widget.conversation, _authService.getCurrentUID(), gif.images.original.url);
   }
 
-  Map<Permission, PermissionStatus> _statuses = Map<Permission, PermissionStatus>();
   Future<void> _handleCameraAndMic() async {
-    _statuses = await [Permission.camera, Permission.microphone].request();
+    await [Permission.camera, Permission.microphone].request();
   }
   Future<void> _onJoin() async {
     await _handleCameraAndMic();
     //TODO: add an entry agoraID, avatar. => get user avatar when disable video.
     //TODO: maintain map<agoraID, bool> camera, => camera status of agoraID.
+
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => CallScreen(channelName: widget.conversation.cid, statuses: _statuses,))
+      MaterialPageRoute(builder: (context) => CallScreen(channelName: widget.conversation.cid,))
     );
   }
   Widget _buildAppBar() {
