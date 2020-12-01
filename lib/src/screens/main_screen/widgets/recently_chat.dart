@@ -29,21 +29,13 @@ class _RecentChatsState extends State<RecentChats> {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
-          ),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
-          ),
           child: Container(
             child: StreamBuilder(
               stream: _messageService.getRecentConversations(widget.uid),
               builder: (context, snapshot) {
-                if (snapshot.hasData){
+                if (snapshot.hasData) {
                   Map data = snapshot.data.snapshot.value;
 
                   if (data == null)
@@ -55,7 +47,6 @@ class _RecentChatsState extends State<RecentChats> {
                   });
 
                   _conversations.sort((Conversation a, Conversation b) => (b.lastTimestamp - a.lastTimestamp));
-
                   return ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -63,11 +54,21 @@ class _RecentChatsState extends State<RecentChats> {
                       recentMessage = conversation.recentMessage;
                       print(conversation.isPrivate);
 
+                      print("recent Message = " + recentMessage.toString());
+                      String recentMessageString = recentMessage.toString();
+                      String shortMessage = recentMessageString;
+                      for (int i = 0; i < recentMessageString.length; i++) {
+                        if (recentMessageString[i] == '\n') {
+                          shortMessage = recentMessageString.substring(0, i);
+                          break;
+                        }
+                      }
+
                       if (conversation.lastTimestamp < 0)
                         return Container();
 
-                      return GestureDetector(
-                        onTap: () {
+                      return FlatButton(
+                        onPressed: () {
                           setState(() {
                             recentMessage.seen[widget.uid] = true;
                           });
@@ -85,13 +86,6 @@ class _RecentChatsState extends State<RecentChats> {
                             top: 5.0, bottom: 5.0, right: 10.0),
                           padding: EdgeInsets.symmetric(
                             horizontal: 10.0, vertical: 10.0),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFFFEFEE),
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(20.0),
-                              bottomRight: Radius.circular(20.0),
-                            ),
-                          ),
                           child: Row(
                             mainAxisAlignment:
                               MainAxisAlignment.spaceBetween,
@@ -105,13 +99,13 @@ class _RecentChatsState extends State<RecentChats> {
                                         backgroundImage: conversation.avatarProvider,
                                       ),
                                       Positioned(
-                                        right: 0.0,
-                                        bottom: 0.0,
+                                        right: -3.0,
+                                        bottom: 03.0,
                                         child: new DotsIndicator(
                                           dotsCount: 1,
                                           position: 0,
                                           decorator: DotsDecorator(
-                                            activeColor: Colors.green,
+                                            activeColor: Colors.lightBlueAccent,
                                             shape: const Border(),
                                             activeShape:
                                             RoundedRectangleBorder(
@@ -131,17 +125,13 @@ class _RecentChatsState extends State<RecentChats> {
                                       Text(
                                         conversation.displayName,
                                         style: TextStyle(
-                                          color: Colors.grey,
                                           fontSize: 15.0,
-                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       SizedBox(height: 5.0),
                                       Container(
-                                        width: MediaQuery.of(context)
-                                          .size
-                                            .width * 0.45,
-                                        child: Text(recentMessage.toString() ,
+                                        width: MediaQuery.of(context).size.width * 0.45,
+                                        child: Text(shortMessage,
                                           style: TextStyle(
                                             color: Colors.blueGrey,
                                             fontSize:
@@ -163,9 +153,7 @@ class _RecentChatsState extends State<RecentChats> {
                                   Text(
                                     DateFormat('hh:mm a').format(recentMessage.sentTime),
                                     style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 15.0,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13.0,
                                     ),
                                   ),
                                 ],
@@ -176,12 +164,17 @@ class _RecentChatsState extends State<RecentChats> {
                       );
                     },
                   );
-                  }
+                }
                 else{
                   if (_conversations.isEmpty)
                     return Container();
                 }
-                }
-              )))));
-    }
+                return Container();
+              }
+            )
+          )
+        )
+      )
+    );
+  }
 }

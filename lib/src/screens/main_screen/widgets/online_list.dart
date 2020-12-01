@@ -16,21 +16,13 @@ class _OnlineListState extends State<OnlineList> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30.0),
-          topRight: Radius.circular(30.0),
-        ),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30.0),
-          topRight: Radius.circular(30.0),
-        ),
         child: ListView.builder(
           itemCount: onlineList.length,
           itemBuilder: (BuildContext context, int index) {
-            return GestureDetector(
-              onTap: () => Navigator.push(
+            return FlatButton(
+              onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (_) => Text("Hello World!"),
@@ -38,21 +30,14 @@ class _OnlineListState extends State<OnlineList> {
               ),
               child: Container(
                 margin: EdgeInsets.only(top: 5.0, bottom: 5.0, right: 10.0),
-                padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                decoration: BoxDecoration(
-                  color: Color(0xFFFFEFEE),
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0),
-                  ),
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Row(
                       children: <Widget>[
                         CircleAvatar(
-                          radius: 35.0,
+                          radius: 25.0,
                           backgroundImage: onlineList[index].avatarProvider,
                         ),
                         SizedBox(width: 10.0),
@@ -64,29 +49,14 @@ class _OnlineListState extends State<OnlineList> {
                               child: Text(
                                 onlineList[index].displayName,
                                 style: TextStyle(
-                                  color: Colors.grey,
+                                  color: Colors.black,
                                   fontSize: 15.0,
-                                  fontWeight: FontWeight.bold,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    Column(
-                      children: <Widget>[
-                        new DotsIndicator(
-                          dotsCount: 1,
-                          position: 0,
-                          decorator: DotsDecorator(
-                            activeColor: Colors.green,
-                            shape: const Border(),
-                            activeShape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0)),
-                          ),
-                        )
                       ],
                     ),
                   ],

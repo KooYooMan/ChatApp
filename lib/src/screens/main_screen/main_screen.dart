@@ -1,7 +1,7 @@
 import 'package:ChatApp/src/screens/main_screen/new_conversation.dart';
 import 'package:ChatApp/src/screens/main_screen/info.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/category_select.dart';
-import 'package:ChatApp/src/screens/main_screen/widgets/favorite_contacts.dart';
+import 'package:ChatApp/src/screens/main_screen/widgets/recently_contacts.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/online_list.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/recently_chat.dart';
 import 'package:ChatApp/src/services/auth_service.dart';
@@ -30,9 +30,12 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     User currentUser = _authService.getCurrentUser();
+    final List<String> titles = ['Recently Chats', 'Online Contacts', 'Group'];
+
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: Padding(
           padding: EdgeInsets.only(left: 10.0),
           child: GestureDetector(
@@ -43,16 +46,22 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ),
             child: CircleAvatar(
-              radius: 30.0,
+              radius: 15.0,
               backgroundImage: NetworkImage(currentUser.photoURL),
             ),
+          ),
+        ),
+        title: Text(titles[_idScreen],
+          style: TextStyle(
+            fontSize: 22.0,
+            color: Colors.black
           ),
         ),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
             iconSize: 30.0,
-            color: Colors.white,
+            color: Colors.grey,
             onPressed: () {
               showSearch(
                 context: context,
@@ -61,63 +70,48 @@ class _MainScreenState extends State<MainScreen> {
             },
           ),
         ],
+        bottom: CategorySelector(
+          onChanged: _changeScreen,
+        ),
       ),
       body: Column(
         children: <Widget>[
-          CategorySelector(
-            onChanged: _changeScreen,
-          ),
           Expanded(
-            child: (_idScreen == 0
-                ? Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30.0),
-                            topRight: Radius.circular(30.0),
-                          ),
-                        ),
-                        child: Column(
-                          children: <Widget>[
-                            FavoriteContacts(),
-                            RecentChats(_authService.getCurrentUID()),
-                          ],
+            child: IndexedStack(
+              index: _idScreen,
+              children: [
+                Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          RecentlyContacts(),
+                          RecentChats(_authService.getCurrentUID()),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30.0),
+                          topRight: Radius.circular(30.0),
                         ),
                       ),
-                      Positioned(
-                          right: 20.0,
-                          bottom: 20.0,
-                          child: GestureDetector(
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => NewConversation(),
-                              ),
-                            ),
-                            child: CircleAvatar(
-                              radius: 30.0,
-                              backgroundImage:
-                                  AssetImage("assets/images/plus.png"),
-                            ),
-                          ))
-                    ],
-                  )
-                : Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(30.0),
-                            topRight: Radius.circular(30.0),
-                          ),
-                        ),
-                        child: OnlineList(),
-                      )
-                    ],
-                  )),
+                      child: OnlineList(),
+                    )
+                  ],
+                ),
+                Container(),
+              ],
+            )
           ),
         ],
       ),
