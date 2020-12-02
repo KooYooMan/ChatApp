@@ -29,7 +29,7 @@ class _MessageWidgetState extends State<MessageWidget> {
   }
 
   Widget _buildDocumentMessage() {
-    Color decorationColor = (widget.isSentByMe) ? Colors.red : Colors.grey[300];
+    Color decorationColor = (widget.isSentByMe) ? Colors.cyan : Colors.grey[300];
     Color textColor = (widget.isSentByMe) ? Colors.white : Colors.black;
     return Container(
       child: Padding(
@@ -113,7 +113,7 @@ class _MessageWidgetState extends State<MessageWidget> {
     );
   }
   Widget _buildTextMessage() {
-    Color decorationColor = (widget.isSentByMe) ? Colors.red : Colors.grey[300];
+    Color decorationColor = (widget.isSentByMe) ? Colors.cyan : Colors.grey[300];
     Color textColor = (widget.isSentByMe) ? Colors.white : Colors.black;
     return Container(
       constraints: BoxConstraints(

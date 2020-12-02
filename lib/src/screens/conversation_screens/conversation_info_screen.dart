@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:ChatApp/src/models/conversation/conversation.dart';
 import 'package:ChatApp/src/screens/conversation_screens/add_member_screen.dart';
 import 'package:ChatApp/src/screens/conversation_screens/decorations/decorations.dart';
+import 'package:ChatApp/src/screens/conversation_screens/report_screen.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -52,7 +53,10 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
             if (result == 1) {
               print("delete");
             } else if (result == 2) {
-              print("report");
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ReportScreen()),
+              );
             } else {
               print("other");
             }

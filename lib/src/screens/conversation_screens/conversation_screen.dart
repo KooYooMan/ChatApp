@@ -148,7 +148,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
     return AppBar(
       leading: IconButton(
         iconSize: 25.0,
-        color: Colors.white,
+        color: Colors.cyan[800],
         icon: Icon(Icons.arrow_back_rounded),
         onPressed: () {
           Navigator.pop(context);
@@ -163,7 +163,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
               widget.conversation.displayName,
               style: TextStyle(
                 fontSize: 20.0,
-                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -173,12 +172,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
       actions: [
         IconButton(
           iconSize: 25.0,
-          icon: Icon(Icons.call, color: Colors.white,),
+          icon: Icon(Icons.call, color: Colors.cyan[800],),
           onPressed: () => _onJoin(),
         ),
         IconButton(
           iconSize: 25.0,
-          icon: Icon(Icons.info, color: Colors.white,),
+          icon: Icon(Icons.info, color: Colors.cyan[800],),
           onPressed: () {
             Navigator.push(
               context,
@@ -190,7 +189,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
         ),
         SizedBox(width: 5.0)
       ],
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.white,
     );
   }
   Widget _buildEmojiPicker() {
@@ -225,7 +224,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     });
                   },
                   icon: Icon(Icons.face),
-                  color: Colors.redAccent,
+                  color: Colors.cyan[800],
                 ),
                 Flexible(
                   child: Container(
@@ -260,7 +259,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     _messageService.addTextMessage(widget.conversation, _authService.getCurrentUID(), content);
                     _textEditingController.clear();
                   },
-                  icon: Icon(Icons.send, color: Colors.red,),
+                  icon: Icon(Icons.send, color: Colors.cyan[800],),
                 )
               ],
             ),
@@ -273,7 +272,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     _imageFromCamera();
                   },
                   icon: Icon(Icons.camera_alt),
-                  color: Colors.redAccent,
+                  color: Colors.cyan[800],
                 ),
                 IconButton(
                   padding: EdgeInsets.symmetric(horizontal: 1.0),
@@ -281,7 +280,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     _imageFromGallery();
                   },
                   icon: Icon(Icons.image_outlined),
-                  color: Colors.redAccent,
+                  color: Colors.cyan[800],
                 ),
                 IconButton(
                   padding: EdgeInsets.symmetric(horizontal: 1.0),
@@ -289,7 +288,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     _filesFromDevice();
                   },
                   icon: Icon(Icons.attach_file),
-                  color: Colors.redAccent,
+                  color: Colors.cyan[800],
                 ),
                 IconButton(
                   padding: EdgeInsets.symmetric(horizontal: 1.0),
@@ -297,7 +296,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     _giphyPicker();
                   },
                   icon: Icon(Icons.gif),
-                  color: Colors.redAccent,
+                  color: Colors.cyan[800],
                 )
               ],
             ) : Container(),

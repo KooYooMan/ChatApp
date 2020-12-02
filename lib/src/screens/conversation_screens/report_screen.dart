@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:toast/toast.dart';
 
 class ReportScreen extends StatefulWidget {
 
@@ -32,7 +33,7 @@ class _ReportScreenState extends State<ReportScreen> {
         onPressed: () {
           Navigator.pop(context);
         },
-        icon: Icon(Icons.arrow_back_rounded, color: Colors.black,),
+        icon: Icon(Icons.arrow_back_rounded, color: Colors.cyan[800],),
         iconSize: 25.0,
       ),
       title: Text(
@@ -45,28 +46,36 @@ class _ReportScreenState extends State<ReportScreen> {
         IconButton(
           onPressed: () {
             print(_reportTextController);
-            _reportTextController.clear();
+            setState(() {
+              _reportTextController.clear();
+              _pickedImages.clear();
+            });
           },
-          icon: Icon(Icons.send, color: Colors.black,),
+          icon: Icon(Icons.send, color: Colors.cyan[800],),
           iconSize: 25.0,
         )
       ],
     );
   }
   Widget _buildPickedImageView() {
-    return ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (BuildContext context, int index) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(10.0),
-          child: Image.file(
-            _pickedImages[index],
-            height: 50.0,
-            fit: BoxFit.fitHeight,
-          ),
-        );
-      },
-    );
+    return (_pickedImages.isNotEmpty) ? Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height / 3,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: _pickedImages.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(10.0),
+            child: Image.file(
+              _pickedImages[index],
+              height: 50.0,
+              fit: BoxFit.fitHeight,
+            ),
+          );
+        },
+      ),
+    ) : Container();
   }
   Widget _buildReportField() {
     return Container(
@@ -80,7 +89,7 @@ class _ReportScreenState extends State<ReportScreen> {
         maxLines: null,
         controller: _reportTextController,
         decoration: const InputDecoration(
-          hintText: "Tell us the issues and how to \nregenerate it.",
+          hintText: "Tell us the issues and how to regenerate it.",
         ),
         validator: (String value) {
           return value.length == 0 ? 'This is required field' : null;
@@ -114,13 +123,13 @@ class _ReportScreenState extends State<ReportScreen> {
                     children: [
                       Icon(Icons.image_outlined),
                       SizedBox(width: 5.0,),
-                      Text("Add images"),
+                      Text("Add images", style: TextStyle(color: Colors.black),),
                     ],
                   ),
                 )
-
               ),
-            )
+            ),
+            _buildPickedImageView(),
           ],
         ),
       )
