@@ -67,9 +67,11 @@ class _NewContactScreenState extends State<NewContactScreen> {
 
       _authService.getCurrentDartUser().then((user) {
         currentUser = user;
-        setState(() {
-          _loading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _loading = false;
+          });
+        }
       });
     });
 

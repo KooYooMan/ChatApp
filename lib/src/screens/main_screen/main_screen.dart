@@ -1,5 +1,5 @@
 import 'package:ChatApp/src/screens/main_screen/new_contact_screen.dart';
-import 'package:ChatApp/src/screens/main_screen/new_conversation.dart';
+import 'package:ChatApp/src/screens/main_screen/new_conversation_screen.dart';
 import 'package:ChatApp/src/screens/main_screen/info.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/category_select.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/recently_contacts.dart';
@@ -94,7 +94,7 @@ class _MainScreenState extends State<MainScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => NewConversation()),
+                  MaterialPageRoute(builder: (_) => NewConversationScreen()),
                 );
               },
             ),
