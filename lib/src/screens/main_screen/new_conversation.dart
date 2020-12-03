@@ -95,7 +95,7 @@ class _NewConversation extends State<NewConversation> {
             decoration: BoxDecoration(
               color: Colors.white,
             ),
-            child: _loading? CircularProgressIndicator() : Column( // TODO: align CPI to center
+            child: _loading? Center(child: CircularProgressIndicator()) : Column( // TODO: align CPI to center
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),

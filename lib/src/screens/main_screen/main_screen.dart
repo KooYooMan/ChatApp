@@ -1,3 +1,4 @@
+import 'package:ChatApp/src/screens/main_screen/new_contact_screen.dart';
 import 'package:ChatApp/src/screens/main_screen/new_conversation.dart';
 import 'package:ChatApp/src/screens/main_screen/info.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/category_select.dart';
@@ -58,16 +59,45 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            iconSize: 30.0,
-            color: Colors.grey,
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: CustomSearchDelegate(),
-              );
-            },
+          Container(
+            margin: EdgeInsets.only(right: 10.0),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              shape: BoxShape.circle,
+            ),
+            width: 35.0,
+            height: 35.0,
+            child: IconButton(
+              icon: Icon(Icons.message_outlined),
+              iconSize: 20.0,
+              color: Colors.black,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => NewContactScreen()),
+                );
+              },
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(right: 10.0),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              shape: BoxShape.circle,
+            ),
+            width: 35.0,
+            height: 35.0,
+            child: IconButton(
+              icon: Icon(Icons.group_add_outlined),
+              iconSize: 20.0,
+              color: Colors.black,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => NewConversation()),
+                );
+              },
+            ),
           ),
         ],
         bottom: CategorySelector(
