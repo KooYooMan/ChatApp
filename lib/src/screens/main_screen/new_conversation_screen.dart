@@ -99,8 +99,24 @@ class _NewConversationScreenState extends State<NewConversationScreen> {
             Container(
               margin: EdgeInsets.only(right: 10.0),
               child: GestureDetector(
-                onTap: () {
+                onTap: () async {
                   if (curList.isNotEmpty) {
+                    List <User> members = [];
+                    members.addAll(curList);
+                    members.add(currentUser);
+                    Conversation newConversation = await _messageService.addGroupConversation(members);
+                    print(newConversation.users);
+                    print(newConversation.displayName);
+                    Navigator.push(context, MaterialPageRoute(
+                      builder: (_) => Material(
+                        child: Scaffold(
+                            resizeToAvoidBottomInset: false,
+                            body: Container(
+                              child: ConversationScreen(newConversation),
+                            )
+                        ),
+                      ),
+                    ));
                     print("OK");
                   }
                 },

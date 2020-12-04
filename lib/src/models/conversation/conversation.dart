@@ -14,6 +14,7 @@ class Conversation {
   bool isPrivate;
   // List<User> users = new List<User>();
   List<Message> messageList = new List<Message>();
+  Map members = new Map();
   List<String> users = new List<String>();
   int lastTimestamp;
   Message recentMessage;
@@ -25,7 +26,7 @@ class Conversation {
   //   this.isPrivate = isPrivate;
   // }
 
-  Conversation.fromSnapshot(Map data){
+  Conversation.fromSnapshot(String cid, Map data){
     AuthService authService = GetIt.I.get<AuthService>();
 
     String currentUID = authService.getCurrentUID();
@@ -63,8 +64,10 @@ class Conversation {
     }
 
     this.lastTimestamp = data['lastTimestamp'];
-
+    List <String> displayNameList = [];
     data['members'].forEach((key, value) {
+      displayNameList.add(value);
+      members[key] = value;
       users.add(key);
     });
     if (users.length == 2){
@@ -82,7 +85,15 @@ class Conversation {
       });
     }
     else {
+      this.cid = cid;
       this.displayName = "Group";
+      // this.displayName = displayNameList[0];
+      // for (var i = 1; i < displayNameList.length; i++){
+      //   if (i == displayNameList.length - 1)
+      //     this.displayName += ", ${displayNameList[i]}";
+      //   else
+      //     this.displayName += ", ${displayNameList[i]}";
+      // }
     }
   }
   // void addMessage(Message message) {

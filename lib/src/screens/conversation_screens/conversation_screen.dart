@@ -423,7 +423,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
               if (showName && !isSentByMe) {
                 w = Column(
                   children: [
-                    NameWidget(widget.conversation.displayName),
+                    NameWidget(widget.conversation.members[currMess.sender]),
                     w
                   ],
                 );
@@ -450,7 +450,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
   @override
   Widget build(BuildContext context) {
-
     return SafeArea(
       child: Scaffold(
         appBar: _buildAppBar(),

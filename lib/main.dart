@@ -8,6 +8,7 @@ import 'package:ChatApp/src/services/firebase.dart';
 import 'package:ChatApp/src/services/auth_service.dart';
 import 'package:ChatApp/src/services/message_service.dart';
 import 'package:ChatApp/src/services/storage_service.dart';
+import 'package:ChatApp/src/services/call_service.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 
 GetIt locator = GetIt.instance;
@@ -17,6 +18,7 @@ void setupSingletons() async {
   locator.registerLazySingleton(() => AuthService());
   locator.registerLazySingleton(() => MessageService());
   locator.registerLazySingleton(() => StorageService());
+  locator.registerLazySingleton(() => CallService());
 }
 
 void main() async {

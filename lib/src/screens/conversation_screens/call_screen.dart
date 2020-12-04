@@ -1,7 +1,11 @@
+import 'package:ChatApp/src/services/auth_service.dart';
+import 'package:ChatApp/src/services/call_service.dart';
 import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
 import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 
@@ -22,9 +26,12 @@ enum VideoStatus {
 }
 
 class _CallScreenState extends State<CallScreen> {
-
+  CallService _callService = GetIt.I.get<CallService>();
+  AuthService _authService = GetIt.I.get<AuthService>();
   final _users = <int>[];
   final _infoStrings = <String>[];
+  String currentUserName;
+  int currentUID;
   bool _muted = false;
   VideoStatus _videoStatus;
   RtcEngine _engine;
@@ -68,7 +75,9 @@ class _CallScreenState extends State<CallScreen> {
       }
     }, joinChannelSuccess: (channel, uid, elapsed) {
       if (mounted) {
-        setState(() {
+        setState(() async {
+          currentUID = uid;
+          await _callService.setCameraStatus(widget.channelName, uid, true);
           final info = 'onJoinChannel: $channel, uid: $uid';
           _infoStrings.add(info);
         });
@@ -108,15 +117,27 @@ class _CallScreenState extends State<CallScreen> {
 
 
 
-  List<Widget> _getRenderViews() {
+  List<Widget> _getRenderViews(Map <int, bool> cameraStatus) {
     final List<Widget> list = [];
-    list.add(RtcLocalView.SurfaceView());
-    //list.add(_buildReplacementWidget(
-    //  NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'),
-    //  'Nghi4 Ph411'
-    //));
+    print("CurrentID = ${currentUID}");
+    if (cameraStatus[currentUID] != null && cameraStatus[currentUID])
+      list.add(RtcLocalView.SurfaceView());
+    else
+      list.add(_buildReplacementWidget(
+          NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'),
+          'Off Camera'
+      ));
+    // list.add();
     //fake Replacement widget.
-    _users.forEach((int uid) => list.add(RtcRemoteView.SurfaceView(uid: uid)));
+    _users.forEach((int uid) {
+      if (cameraStatus[uid] != null && cameraStatus[uid])
+        list.add(RtcRemoteView.SurfaceView(uid: uid));
+      else
+        list.add(_buildReplacementWidget(
+            NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'),
+            'Off Camera'
+        ));
+    });
     return list;
   }
 
@@ -153,6 +174,7 @@ class _CallScreenState extends State<CallScreen> {
       }
       await _engine.muteLocalVideoStream(false);
       //TODO: send event turn on camera
+      await _callService.setCameraStatus(widget.channelName, currentUID, true);
     } else if (_videoStatus == VideoStatus.front) {
       if (mounted) {
         setState(() {
@@ -168,7 +190,8 @@ class _CallScreenState extends State<CallScreen> {
       }
       await _engine.muteLocalVideoStream(true);
       _engine.switchCamera();
-      //TODO: send event turn off camera.
+      print(currentUID);
+      await _callService.setCameraStatus(widget.channelName, currentUID, false);
     }
   }
   // _buildReplacementWidget return widget replacing remote view when users turn off their camera.
@@ -276,45 +299,61 @@ class _CallScreenState extends State<CallScreen> {
   }
   /// Video layout wrapper
   Widget _buildViews() {
+    Map <int, bool> cameraStatus = new Map<int, bool>();
+    return StreamBuilder(
+      stream: _callService.getCallStatus(widget.channelName),
+      builder: (context, snapshot){
+        print("CAM = $cameraStatus");
 
-    final views = _getRenderViews();
-    switch (views.length) {
-      case 1:
-        return Container(
-          child: Column(
-            children: <Widget>[_videoView(views[0])],
-          )
-        );
-      case 2:
-        return Container(
-          child: Column(
-            children: <Widget>[
-              _expandedVideoRow([views[0]]),
-              _expandedVideoRow([views[1]])
-            ],
-          )
-        );
-      case 3:
-        return Container(
-          child: Column(
-            children: <Widget>[
-              _expandedVideoRow(views.sublist(0, 2)),
-              _expandedVideoRow(views.sublist(2, 3))
-            ],
-          )
-        );
-      case 4:
-        return Container(
-          child: Column(
-            children: <Widget>[
-              _expandedVideoRow(views.sublist(0, 2)),
-              _expandedVideoRow(views.sublist(2, 4))
-            ],
-          )
-        );
-      default:
-    }
-    return Container();
+        if (snapshot.hasData){
+          Map data = snapshot.data.snapshot.value;
+          if (data != null)
+            data.forEach((key, value) {
+              cameraStatus[int.parse(key)] = value['isCameraOn'];
+            });
+          // print("CAM after = $cameraStatus");
+        }
+        final views = _getRenderViews(cameraStatus);
+
+        switch (views.length) {
+          case 1:
+            return Container(
+              child: Column(
+                children: <Widget>[_videoView(views[0])],
+              )
+            );
+          case 2:
+            return Container(
+              child: Column(
+                children: <Widget>[
+                  _expandedVideoRow([views[0]]),
+                  _expandedVideoRow([views[1]])
+                ],
+              )
+            );
+          case 3:
+            return Container(
+              child: Column(
+                children: <Widget>[
+                  _expandedVideoRow(views.sublist(0, 2)),
+                  _expandedVideoRow(views.sublist(2, 3))
+                ],
+              )
+            );
+          case 4:
+            return Container(
+              child: Column(
+                children: <Widget>[
+                  _expandedVideoRow(views.sublist(0, 2)),
+                  _expandedVideoRow(views.sublist(2, 4))
+                ],
+              )
+            );
+          default:
+        }
+        return Container();
+      }
+    );
   }
   bool _showToolBar = true;
   @override

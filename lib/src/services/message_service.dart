@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ChatApp/src/models/user/user.dart';
 
+import 'package:uuid/uuid.dart';
+
 class MessageService {
   FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
 
@@ -139,6 +141,55 @@ class MessageService {
     return query.onValue;
   }
 
+  Future<Conversation> addGroupConversation(List<User> users) async {
+    var uuid = Uuid();
+    var conversationId = uuid.v4();
+
+    var conversationRef = _firebaseService.getDatabaseReference(["conversations"]);
+
+    Conversation conversation = null;
+    await _firebaseService.getDatabaseReference(["conversations", conversationId]).once().then((snapshot){
+      if (snapshot.value != null)
+        conversation = Conversation.fromSnapshot(conversationId, snapshot.value);
+    });
+
+    if (conversation != null)
+      return conversation;
+
+    Map members = new Map();
+    Map seen = new Map();
+    users.forEach((user) {
+      members[user.uid] = user.displayName;
+      seen[user.uid] = true;
+    });
+
+    await _firebaseService.addDocumentCustomId(conversationRef, conversationId, Map<String, dynamic>.from({
+      "recentMessage": "",
+      "recentMessageType": 0,
+      "lastTimestamp": -1,
+      "members": members,
+      "seen": seen
+    }));
+
+    users.forEach((user) async {
+      var messRef = _firebaseService.getDatabaseReference(["users", user.uid, "conversations", conversationId]);
+      await _firebaseService.updateDocument(messRef, Map<String, dynamic>.from({
+        "recentMessage": "",
+        "lastTimestamp": -1,
+        "recentMessageType": 0,
+        "members": members,
+        "seen": seen
+      }));
+    });
+
+    await _firebaseService.getDatabaseReference(["conversations", conversationId]).once().then((snapshot){
+      print(snapshot.value);
+      conversation = Conversation.fromSnapshot(conversationId, snapshot.value);
+    });
+
+    return conversation;
+  }
+
   Future<Conversation> addConversation(User firstUser, User secondUser) async {
     if (firstUser.uid.compareTo(secondUser.uid) > 0){
       var tmp = firstUser;
@@ -152,7 +203,7 @@ class MessageService {
     Conversation conversation = null;
     await _firebaseService.getDatabaseReference(["conversations", conversationId]).once().then((snapshot){
       if (snapshot.value != null)
-        conversation = Conversation.fromSnapshot(snapshot.value);
+        conversation = Conversation.fromSnapshot(conversationId, snapshot.value);
     });
 
     if (conversation != null)
@@ -204,7 +255,7 @@ class MessageService {
 
     await _firebaseService.getDatabaseReference(["conversations", conversationId]).once().then((snapshot){
       print(snapshot.value);
-      conversation = Conversation.fromSnapshot(snapshot.value);
+      conversation = Conversation.fromSnapshot(conversationId, snapshot.value);
     });
 
     return conversation;

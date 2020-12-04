@@ -39,9 +39,10 @@ class AuthService {
     }
   }
   
-  String getDisplayName(String uid){
-    var query = _firebaseService.getDatabaseReference(["users", uid, "displayName"]);
+  Future<String> getDisplayName(String uid) async {
+    var query = await _firebaseService.getDatabaseReference(["users", uid, "displayName"]);
     query.once().then((value) {
+      print("name = $value");
       return value;
     });
   }

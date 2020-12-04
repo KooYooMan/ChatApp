@@ -43,7 +43,7 @@ class _RecentChatsState extends State<RecentChats> {
 
                   _conversations.clear();
                   data.forEach((key, value) {
-                    _conversations.add(Conversation.fromSnapshot(value));
+                    _conversations.add(Conversation.fromSnapshot(key, value));
                   });
 
                   _conversations.sort((Conversation a, Conversation b) => (b.lastTimestamp - a.lastTimestamp));
