@@ -6,6 +6,7 @@ import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'helpers/helpers.dart';
 import 'widgets/input_fields.dart';
 import 'widgets/buttons.dart';
+
 class SignInScreen extends StatefulWidget {
   SignInScreen({this.switchPage});
   final Function() switchPage;
@@ -16,8 +17,10 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final formKeySignIn = GlobalKey<FormState>();
   AuthService _authService = GetIt.I.get<AuthService>();
-  TextEditingController emailTextEditingController = new TextEditingController();
-  TextEditingController passwordTextEditingController = new TextEditingController();
+  TextEditingController emailTextEditingController =
+      new TextEditingController();
+  TextEditingController passwordTextEditingController =
+      new TextEditingController();
 
   String _email;
   String _password;
@@ -38,7 +41,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Future<String> _signIn() async {
     if (formKeySignIn.currentState == null) return "-1";
-    if(formKeySignIn.currentState.validate()) {
+    if (formKeySignIn.currentState.validate()) {
       _email = emailTextEditingController.text;
       _password = passwordTextEditingController.text;
       var uid = await _authService.signIn(_email, _password);
@@ -49,54 +52,57 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Widget _buildForm() {
     return Expanded(
-      child: Container(
-        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 7),
-        child: Form(
-          key: formKeySignIn,
-          child: Column(
-            children: <Widget>[
-              SizedBox(height: 20.0),
-              Container(
-                margin: EdgeInsets.only(bottom: 20, left: 20.0, right: 20.0),
-                child: Text(
-                  "Login To Continue",
-                  style: TextStyle(
-                      fontSize: 27
+      child: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 7),
+          child: Form(
+            key: formKeySignIn,
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: 20.0),
+                Container(
+                  margin: EdgeInsets.only(bottom: 20, left: 20.0, right: 20.0),
+                  child: Text(
+                    "Login To Continue",
+                    style: TextStyle(fontSize: 27),
                   ),
                 ),
-              ),
-              SizedBox(height: 10.0),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0),
-                child: InputField(
-                  icon: Icons.email,
-                  hint: "Enter Email...",
-                  controller: emailTextEditingController,
-                  formKey: formKeySignIn,
-                  validator: (value) {
-                    return  emailValidator(value);
-                  },
+                SizedBox(height: 10.0),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: InputField(
+                    icon: Icons.email,
+                    hint: "Enter Email...",
+                    controller: emailTextEditingController,
+                    formKey: formKeySignIn,
+                    validator: (value) {
+                      return emailValidator(value);
+                    },
+                  ),
                 ),
-              ),
-              SizedBox(height: 30,),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0),
-                child: HiddenInputField(
-                  icon: Icons.vpn_key,
-                  hint: "Enter Password...",
-                  controller: passwordTextEditingController,
-                  formKey: formKeySignIn,
-                  validator: (value) {
-                    return passwordValidator(value, value);
-                  },
+                SizedBox(
+                  height: 30,
                 ),
-              )
-            ],
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: HiddenInputField(
+                    icon: Icons.vpn_key,
+                    hint: "Enter Password...",
+                    controller: passwordTextEditingController,
+                    formKey: formKeySignIn,
+                    validator: (value) {
+                      return passwordValidator(value, value);
+                    },
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
   Widget _buildButtons() {
     return Column(
       children: <Widget>[
@@ -104,10 +110,13 @@ class _SignInScreenState extends State<SignInScreen> {
           behavior: HitTestBehavior.translucent,
           onTap: () async {
             String signInResult = await _signIn();
-            if (signInResult != "-1"){
-              Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (_) => MainScreen(),
-              ),);
+            if (signInResult != "-1") {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MainScreen(),
+                ),
+              );
             }
           },
           child: Container(
@@ -132,6 +141,7 @@ class _SignInScreenState extends State<SignInScreen> {
       ],
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -140,10 +150,11 @@ class _SignInScreenState extends State<SignInScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             _buildForm(),
-            (_keyboardVisible == false) ? Container(
-              margin: EdgeInsets.only(bottom: 10.0),
-              child: _buildButtons()
-            ) : Container(),
+            (_keyboardVisible == false)
+                ? Container(
+                    margin: EdgeInsets.only(bottom: 10.0),
+                    child: _buildButtons())
+                : Container(),
           ],
         ),
       ),
