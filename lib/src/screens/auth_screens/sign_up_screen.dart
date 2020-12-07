@@ -9,7 +9,6 @@ import 'widgets/input_fields.dart';
 import 'widgets/buttons.dart';
 import 'package:toast/toast.dart';
 
-
 class SignUpScreen extends StatefulWidget {
   SignUpScreen({this.switchPage});
   final Function() switchPage;
@@ -21,10 +20,14 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final formKeySignUp = GlobalKey<FormState>();
   AuthService _authService = GetIt.I.get<AuthService>();
-  TextEditingController emailTextEditingController = new TextEditingController();
-  TextEditingController usernameTextEditingController = new TextEditingController();
-  TextEditingController passwordTextEditingController = new TextEditingController();
-  TextEditingController confirmPasswordTextEditingController = new TextEditingController();
+  TextEditingController emailTextEditingController =
+      new TextEditingController();
+  TextEditingController usernameTextEditingController =
+      new TextEditingController();
+  TextEditingController passwordTextEditingController =
+      new TextEditingController();
+  TextEditingController confirmPasswordTextEditingController =
+      new TextEditingController();
   String _email;
   String _username;
   String _password;
@@ -46,99 +49,106 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   bool isLoading = false;
-  Future<void> _signUp() async{
-    if(formKeySignUp.currentState.validate()) {
+  Future<void> _signUp() async {
+    if (formKeySignUp.currentState.validate()) {
       setState(() {
         isLoading = true;
       });
       _username = usernameTextEditingController.text;
       _email = emailTextEditingController.text;
       _password = passwordTextEditingController.text;
-      await _authService.signUp(_email, _password, _username)
+      await _authService
+          .signUp(_email, _password, _username)
           .catchError((error) {
-        Toast.show("Sign up with error $error", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        Toast.show("Sign up with error $error", context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         return Future.error(error);
       });
-      Toast.show("Sign up successful", context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      Toast.show("Sign up successful", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       widget.switchPage();
     }
   }
 
-
   Widget _buildForm() {
     return Expanded(
-      child: Container(
-        margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 7),
-        child: Form(
-          key: formKeySignUp,
-          child: Column(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(bottom: 20),
-                child: Text(
-                  "Create a New Account",
-                  style: TextStyle(
-                      fontSize: 20
+      child: SingleChildScrollView(
+        child: Container(
+          margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 7),
+          child: Form(
+            key: formKeySignUp,
+            child: Column(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: Text(
+                    "Create a New Account",
+                    style: TextStyle(fontSize: 20),
                   ),
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0),
-                child: InputField(
-                  icon: Icons.email,
-                  hint: "Enter Email...",
-                  controller: emailTextEditingController,
-                  formKey: formKeySignUp,
-                  validator: (value) {
-                    return emailValidator(value);
-                  },
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: InputField(
+                    icon: Icons.email,
+                    hint: "Enter Email...",
+                    controller: emailTextEditingController,
+                    formKey: formKeySignUp,
+                    validator: (value) {
+                      return emailValidator(value);
+                    },
+                  ),
                 ),
-              ),
-              SizedBox(height: 15,),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0),
-                child: InputField(
-                  icon: Icons.person,
-                  hint: "Enter your display name",
-                  controller: usernameTextEditingController,
-                  formKey: formKeySignUp,
-                  validator: (value) {
-                    return usernameValidator(value);
-                  },
+                SizedBox(
+                  height: 15,
                 ),
-              ),
-              SizedBox(height: 15.0,),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0),
-                child: HiddenInputField(
-                  icon: Icons.vpn_key,
-                  hint: "Enter Password...",
-                  controller: passwordTextEditingController,
-                  formKey: formKeySignUp,
-                  validator: (value) {
-                    return passwordValidator(value, value);
-                  },
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: InputField(
+                    icon: Icons.person,
+                    hint: "Enter your display name",
+                    controller: usernameTextEditingController,
+                    formKey: formKeySignUp,
+                    validator: (value) {
+                      return usernameValidator(value);
+                    },
+                  ),
                 ),
-              ),
-              SizedBox(height: 15),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10.0),
-                child: HiddenInputField(
-                  icon: Icons.vpn_key,
-                  hint: "Confirm Password...",
-                  controller: confirmPasswordTextEditingController,
-                  formKey: formKeySignUp,
-                  validator: (value) {
-                    return passwordValidator(value, passwordTextEditingController.text);
-                  }
+                SizedBox(
+                  height: 15.0,
                 ),
-              ),
-            ],
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: HiddenInputField(
+                    icon: Icons.vpn_key,
+                    hint: "Enter Password...",
+                    controller: passwordTextEditingController,
+                    formKey: formKeySignUp,
+                    validator: (value) {
+                      return passwordValidator(value, value);
+                    },
+                  ),
+                ),
+                SizedBox(height: 15),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: HiddenInputField(
+                      icon: Icons.vpn_key,
+                      hint: "Confirm Password...",
+                      controller: confirmPasswordTextEditingController,
+                      formKey: formKeySignUp,
+                      validator: (value) {
+                        return passwordValidator(
+                            value, passwordTextEditingController.text);
+                      }),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+
   Widget _buildButtons() {
     return Column(
       children: <Widget>[
@@ -149,7 +159,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               text: "Create Account",
             ),
           ),
-          onTap: (){
+          onTap: () {
             _signUp();
           },
         ),
@@ -177,10 +187,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             _buildForm(),
-            (_keyboardVisible == false) ? Container(
-              margin: EdgeInsets.only(bottom: 10.0),
-              child: _buildButtons()
-            ) : Container(),
+            (_keyboardVisible == false)
+                ? Container(
+                    margin: EdgeInsets.only(bottom: 10.0),
+                    child: _buildButtons())
+                : Container(),
           ],
         ),
       ),

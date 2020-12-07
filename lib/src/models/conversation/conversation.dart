@@ -26,7 +26,7 @@ class Conversation {
   //   this.isPrivate = isPrivate;
   // }
 
-  Conversation.fromSnapshot(String cid, Map data){
+  Conversation.fromSnapshot(String cid, Map data) {
     AuthService authService = GetIt.I.get<AuthService>();
 
     String currentUID = authService.getCurrentUID();
@@ -36,7 +36,8 @@ class Conversation {
     switch (MessageType.values[data["recentMessageType"]]) {
       case MessageType.text:
         {
-          recentMessage = TextMessage(data["lastSender"],
+          recentMessage = TextMessage(
+              data["lastSender"],
               DateTime.fromMillisecondsSinceEpoch(data['lastTimestamp']),
               data['seen'],
               data['recentMessage']);
@@ -44,7 +45,8 @@ class Conversation {
         }
       case MessageType.image:
         {
-          recentMessage = ImageMessage(data["lastSender"],
+          recentMessage = ImageMessage(
+              data["lastSender"],
               DateTime.fromMillisecondsSinceEpoch(data['lastTimestamp']),
               data['seen'],
               data['recentMessage']);
@@ -52,7 +54,8 @@ class Conversation {
         }
       case MessageType.document:
         {
-          recentMessage = DocumentMessage(data["lastSender"],
+          recentMessage = DocumentMessage(
+              data["lastSender"],
               DateTime.fromMillisecondsSinceEpoch(data['lastTimestamp']),
               data['seen'],
               data['docName'],
@@ -64,29 +67,29 @@ class Conversation {
     }
 
     this.lastTimestamp = data['lastTimestamp'];
-    List <String> displayNameList = [];
+    List<String> displayNameList = [];
     data['members'].forEach((key, value) {
       displayNameList.add(value);
       members[key] = value;
       users.add(key);
     });
-    if (users.length == 2){
-      if (users[0].compareTo(users[1]) > 0){
+    if (users.length == 2) {
+      if (users[0].compareTo(users[1]) > 0) {
         String tmp = users[0];
         users[0] = users[1];
         users[1] = tmp;
       }
       this.cid = '${users[0]}-${users[1]}';
       users.forEach((element) {
-        if (element != currentUID){
+        if (element != currentUID) {
           // this.displayName = element;
           this.displayName = data['members'][element];
         }
       });
-    }
-    else {
+    } else {
       this.cid = cid;
-      this.displayName = "Group";
+      this.displayName =
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       // this.displayName = displayNameList[0];
       // for (var i = 1; i < displayNameList.length; i++){
       //   if (i == displayNameList.length - 1)
@@ -107,4 +110,3 @@ class Conversation {
   //   messageList.sort((a, b) => (a.sentTime.compareTo(b.sentTime)));
   // }
 }
-
