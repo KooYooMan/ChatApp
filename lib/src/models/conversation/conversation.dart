@@ -88,15 +88,13 @@ class Conversation {
       });
     } else {
       this.cid = cid;
-      this.displayName =
-          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-      // this.displayName = displayNameList[0];
-      // for (var i = 1; i < displayNameList.length; i++){
-      //   if (i == displayNameList.length - 1)
-      //     this.displayName += ", ${displayNameList[i]}";
-      //   else
-      //     this.displayName += ", ${displayNameList[i]}";
-      // }
+      this.displayName = displayNameList[0];
+      for (var i = 1; i < displayNameList.length; i++){
+        if (i == displayNameList.length - 1)
+          this.displayName += ", ${displayNameList[i]}";
+        else
+          this.displayName += ", ${displayNameList[i]}";
+      }
     }
   }
   // void addMessage(Message message) {

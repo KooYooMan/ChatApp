@@ -35,7 +35,7 @@ class Info extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.exit_to_app),
               iconSize: 30.0,
-              color: Colors.white,
+              color: Colors.black,
               onPressed: () {
                 _authService.signOut();
                 Navigator.push(context, MaterialPageRoute(

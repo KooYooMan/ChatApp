@@ -158,12 +158,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
         children: [
           CircularImage(NetworkImage(_authService.getCurrentUser().photoURL)), //TODO: change avatar
           SizedBox(width: 8.0),
-          Container(
+          Expanded(
             child: Text(
               widget.conversation.displayName,
               style: TextStyle(
                 fontSize: 20.0,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ]
