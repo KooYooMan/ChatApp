@@ -10,6 +10,9 @@ import 'package:ChatApp/src/services/message_service.dart';
 import 'package:ChatApp/src/services/storage_service.dart';
 import 'package:ChatApp/src/services/call_service.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:google_map_location_picker/google_map_location_picker.dart';
+import 'package:google_map_location_picker/generated/l10n.dart' as location_picker;
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 GetIt locator = GetIt.instance;
 
@@ -42,6 +45,16 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       title: 'Chat App',
+      localizationsDelegates: const [
+        location_picker.S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const <Locale>[
+        Locale('en', ''),
+        Locale('vn', ''),
+      ],
       theme: ThemeData(
         primaryColor: Colors.white,
         accentColor: Colors.cyan,
@@ -56,7 +69,7 @@ class MyApp extends StatelessWidget {
             child: AuthScreen()
           )
         ),
-      ) : MainScreen()
+      ) : MainScreen(),
     );
   }
 }

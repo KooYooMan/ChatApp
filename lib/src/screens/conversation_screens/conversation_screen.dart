@@ -21,6 +21,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:giphy_picker/giphy_picker.dart';
+import 'package:google_map_location_picker/google_map_location_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+
 import 'image_view_screen.dart';
 
 import 'package:get_it/get_it.dart';
@@ -129,6 +133,17 @@ class _ConversationScreenState extends State<ConversationScreen> {
     final gif = await GiphyPicker.pickGif(context: context, apiKey: gifAPIKey);
     print(gif.images.original.url);
     _messageService.addImageMessage(widget.conversation, _authService.getCurrentUID(), gif.images.original.url);
+  }
+
+  _locationPicker() async {
+    LocationResult result = await showLocationPicker(
+      context,
+      "AIzaSyDqdLipuJ8pqs_SHhO2jwcAsYrMCjT9Cf8",
+      countries: ['VN'],
+      layersButtonEnabled: true,
+    );
+    //TODO: send location message from here
+    print(result.latLng.latitude.toString() + " " + result.latLng.longitude.toString() + " " + result.address);
   }
 
   Future<void> _handleCameraAndMic() async {
@@ -297,6 +312,12 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     _giphyPicker();
                   },
                   icon: Icon(Icons.gif),
+                  color: Colors.cyan[800],
+                ),
+                IconButton(
+                  padding: EdgeInsets.symmetric(horizontal: 1.0),
+                  onPressed: () => _locationPicker(),
+                  icon: Icon(Icons.map_outlined),
                   color: Colors.cyan[800],
                 )
               ],

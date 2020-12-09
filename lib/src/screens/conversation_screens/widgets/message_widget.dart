@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:ChatApp/src/models/message/document_message.dart';
 import 'package:ChatApp/src/models/message/image_message.dart';
+import 'package:ChatApp/src/models/message/location_message.dart';
 import 'package:ChatApp/src/screens/conversation_screens/image_view_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:ChatApp/src/models/message/message.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -102,6 +104,49 @@ class _MessageWidgetState extends State<MessageWidget> {
       ),
     );
   }
+  Widget _buildLocationMessage() {
+    Color decorationColor = (widget.isSentByMe) ? Colors.cyan : Colors.grey[300];
+    Color textColor = (widget.isSentByMe) ? Colors.white : Colors.black;
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+        child: Row(
+          children: [
+            Center(
+              child: Icon(
+                Icons.location_on_outlined,
+                size: 16,
+              ),
+            ),
+            Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width / 3 * 2,
+              ),
+              child: RichText(
+                text: TextSpan(
+                    text: widget.message.content,
+                    style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: textColor
+                    ),
+                    recognizer: TapGestureRecognizer()..onTap = () {
+                      if (widget.message.content != null) {
+                        MapsLauncher.launchQuery(widget.message.content);
+                      }
+                      MapsLauncher.launchCoordinates((widget.message as LocationMessage).latitude, (widget.message as LocationMessage).longitude);
+                    }
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+      decoration: BoxDecoration(
+        color: decorationColor,
+        borderRadius: BorderRadius.circular(20.0),
+      ),
+    );
+  }
   Widget _buildImageMessage() {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15.0),
@@ -136,6 +181,9 @@ class _MessageWidgetState extends State<MessageWidget> {
     }
     if (widget.message.type == MessageType.document) {
       return _buildDocumentMessage();
+    }
+    if (widget.message.type == MessageType.location) {
+      return _buildLocationMessage();
     }
     return _buildTextMessage();
   }

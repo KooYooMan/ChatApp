@@ -3,6 +3,7 @@ enum MessageType {
   document,
   image,
   audio,
+  location,
 }
 
 class Message {
