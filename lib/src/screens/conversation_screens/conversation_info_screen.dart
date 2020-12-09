@@ -135,11 +135,17 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
               ),
               SizedBox(height: 20.0),
               Center(
-                child: Text(
-                  widget.conversation.displayName,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 50,
+                  child: Text(
+                    widget.conversation.displayName,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
