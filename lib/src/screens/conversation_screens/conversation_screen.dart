@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:ChatApp/src/models/message/document_message.dart';
+import 'package:ChatApp/src/models/message/location_message.dart';
 import 'package:ChatApp/src/models/message/text_message.dart';
 import 'package:ChatApp/src/screens/conversation_screens/call_screen.dart';
 import 'package:flutter/material.dart';
@@ -143,6 +144,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       layersButtonEnabled: true,
     );
     //TODO: send location message from here
+    _messageService.addLocationMessage(widget.conversation, _authService.getCurrentUID(), result.address, result.latLng.latitude, result.latLng.longitude);
     print(result.latLng.latitude.toString() + " " + result.latLng.longitude.toString() + " " + result.address);
   }
 
@@ -171,7 +173,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
       ),
       title: Row(
         children: [
-          CircularImage(NetworkImage(_authService.getCurrentUser().photoURL)), //TODO: change avatar
+          CircularImage(widget.conversation.avatarProvider),
           SizedBox(width: 8.0),
           Expanded(
             child: Text(
@@ -342,6 +344,8 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 list.add(ImageMessage.fromSnapshot(key, value));
               if (value['type'] == MessageType.document.index)
                 list.add(DocumentMessage.fromSnapshot(key, value));
+              if (value['type'] == MessageType.location.index)
+                list.add(LocationMessage.fromSnapshot(key, value));
             });
           list.sort((Message a, Message b) => (a.sentTime.millisecondsSinceEpoch - b.sentTime.millisecondsSinceEpoch));
         }

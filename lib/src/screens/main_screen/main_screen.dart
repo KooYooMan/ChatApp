@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:ChatApp/src/screens/main_screen/new_contact_screen.dart';
 import 'package:ChatApp/src/screens/main_screen/new_conversation_screen.dart';
 import 'package:ChatApp/src/screens/main_screen/info.dart';
@@ -6,7 +8,10 @@ import 'package:ChatApp/src/screens/main_screen/widgets/recently_contacts.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/online_list.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/recently_chat.dart';
 import 'package:ChatApp/src/services/auth_service.dart';
+import 'package:ChatApp/src/services/firebase.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'widgets/custom_search_delegate.dart';
 
@@ -19,7 +24,12 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  User currentUser;
   AuthService _authService = GetIt.I.get<AuthService>();
+  FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
   int _idScreen = 0;
   void _changeScreen(int newId) {
@@ -28,10 +38,99 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void registerNotification() {
+    firebaseMessaging.requestNotificationPermissions();
+
+    firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
+      print('onMessage: $message');
+      showNotification(message['notification']);
+      return;
+    }, onResume: (Map<String, dynamic> message) {
+      print('onResume: $message');
+      return;
+    }, onLaunch: (Map<String, dynamic> message) {
+      print('onLaunch: $message');
+      return;
+    });
+
+    firebaseMessaging.getToken().then((token) {
+      print('token: $token');
+      var ref = _firebaseService.getDatabaseReference(["users", currentUser.uid]);
+      _firebaseService.updateDocument(ref, Map<String, dynamic>.from({
+        'pushToken': token
+      }));
+      // FirebaseFirestore.instance
+      //     .collection('users')
+      //     .doc(currentUserId)
+      //     .update({'pushToken': token});
+    }).catchError((err) {
+      print('error = ${err.message.toString()}');
+    });
+  }
+
+  void configLocalNotification() {
+    var initializationSettingsAndroid =
+    new AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettingsIOS = new IOSInitializationSettings();
+    var initializationSettings = new InitializationSettings(
+        android: initializationSettingsAndroid);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  void showNotification(message) async {
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+      'com.dfa.flutterchatdemo',
+      'Flutter chat demo',
+      'your channel description',
+      playSound: true,
+      enableVibration: true,
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        android: androidPlatformChannelSpecifics);
+
+    print(message);
+
+    await flutterLocalNotificationsPlugin.show(0, message['title'].toString(),
+        message['body'].toString(), platformChannelSpecifics,
+        payload: json.encode(message));
+
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    currentUser = _authService.getCurrentUser();
+    var ref = _firebaseService.getDatabaseReference(["users", currentUser.uid]);
+    ref.update({
+      "isOnline": true
+    });
+    // registerNotification();
+    // configLocalNotification();
+  }
+
   @override
   Widget build(BuildContext context) {
     User currentUser = _authService.getCurrentUser();
     final List<String> titles = ['Recently Chats', 'Online Contacts', 'Group'];
+
+    var ref = _firebaseService.getDatabaseReference(["users", currentUser.uid]);
+    var onlineRef = _firebaseService.getDatabaseReference([".info/connected"]);
+    onlineRef.onValue.listen((event) {
+      var snapshot = event.snapshot;
+      if (snapshot.value == true) {
+        ref.update({ 
+          "isOnline": true
+        });
+        print('Client is Connected');
+      }
+    });
+
+    ref.onDisconnect().update({
+      "isOnline": false
+    });
 
     return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
@@ -118,8 +217,8 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                       child: Column(
                         children: <Widget>[
-                          RecentlyContacts(),
-                          RecentChats(_authService.getCurrentUID()),
+                          RecentlyContacts(currentUser.uid),
+                          RecentChats(currentUser.uid),
                         ],
                       ),
                     ),

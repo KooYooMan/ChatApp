@@ -47,6 +47,7 @@ class _RecentChatsState extends State<RecentChats> {
                                   .add(Conversation.fromSnapshot(key, value));
                             });
 
+
                             _conversations.sort(
                                 (Conversation a, Conversation b) =>
                                     (b.lastTimestamp - a.lastTimestamp));
@@ -58,8 +59,6 @@ class _RecentChatsState extends State<RecentChats> {
                                 recentMessage = conversation.recentMessage;
                                 print(conversation.isPrivate);
 
-                                print("recent Message = " +
-                                    recentMessage.toString());
                                 String recentMessageString =
                                     recentMessage.toString();
                                 String shortMessage = recentMessageString;
@@ -108,24 +107,24 @@ class _RecentChatsState extends State<RecentChats> {
                                                   backgroundImage: conversation
                                                       .avatarProvider,
                                                 ),
-                                                Positioned(
-                                                    right: -3.0,
-                                                    bottom: 03.0,
-                                                    child: new DotsIndicator(
-                                                      dotsCount: 1,
-                                                      position: 0,
-                                                      decorator: DotsDecorator(
-                                                        activeColor: Colors
-                                                            .lightBlueAccent,
-                                                        shape: const Border(),
-                                                        activeShape:
-                                                            RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            5.0)),
-                                                      ),
-                                                    ))
+                                                // Positioned(
+                                                //     right: -3.0,
+                                                //     bottom: -3.0,
+                                                //     child: new DotsIndicator(
+                                                //       dotsCount: 1,
+                                                //       position: 0,
+                                                //       decorator: DotsDecorator(
+                                                //         activeColor: Colors
+                                                //             .lightBlueAccent,
+                                                //         shape: const Border(),
+                                                //         activeShape:
+                                                //             RoundedRectangleBorder(
+                                                //                 borderRadius:
+                                                //                     BorderRadius
+                                                //                         .circular(
+                                                //                             5.0)),
+                                                //       ),
+                                                //     ))
                                               ],
                                             ),
                                             SizedBox(width: 10.0),

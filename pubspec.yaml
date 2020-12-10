@@ -57,6 +57,8 @@ dependencies:
   google_map_location_picker: ^4.1.2+1
   url_launcher: ^5.7.10
   maps_launcher: ^1.2.2+2
+  firebase_messaging: ^7.0.3
+  flutter_local_notifications: ^3.0.2
 
 dev_dependencies:
   flutter_test:

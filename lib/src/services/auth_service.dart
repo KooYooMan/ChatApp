@@ -38,10 +38,19 @@ class AuthService {
       return Future.error(e);
     }
   }
+
+  user.User getUserByUid(String uid) {
+    var query = _firebaseService.getDatabaseReference(["users", uid]);
+    var member;
+    query.once().then((snapshot){
+      member = user.User.fromSnapshot(uid, snapshot.value);
+    });
+    return member;
+  }
   
   Future<String> getDisplayName(String uid) async {
     var query = await _firebaseService.getDatabaseReference(["users", uid, "displayName"]);
-    query.once().then((value) {
+    await query.once().then((value) {
       print("name = $value");
       return value;
     });
@@ -64,6 +73,12 @@ class AuthService {
       result = user.User.fromSnapshot(_firebaseAuth.currentUser.uid, snapshot.value);
     });
     return result;
+  }
+
+  String getAvatarURL(String uid) {
+    _firebaseService.getDatabaseReference(["users", uid, "photoURL"]).once().then((value) {
+      return value;
+    });
   }
 
   Future<String> signUp(String email, String password, String username) async {

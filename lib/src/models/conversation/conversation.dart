@@ -1,5 +1,6 @@
 import 'package:ChatApp/src/models/message/document_message.dart';
 import 'package:ChatApp/src/models/message/image_message.dart';
+import 'package:ChatApp/src/models/message/location_message.dart';
 import 'package:ChatApp/src/models/message/message.dart';
 import 'package:ChatApp/src/models/message/text_message.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,18 @@ class Conversation {
     this.isPrivate = false; // TODO : Private conversation
 
     switch (MessageType.values[data["recentMessageType"]]) {
+      case MessageType.location:
+        {
+          recentMessage = LocationMessage(
+              data["lastSender"],
+              DateTime.fromMillisecondsSinceEpoch(data['lastTimestamp']),
+              data['seen'],
+              data['recentMessage'],
+              data['latitude'],
+              data['longitude']
+          );
+          break;
+        }
       case MessageType.text:
         {
           recentMessage = TextMessage(
@@ -82,29 +95,19 @@ class Conversation {
       this.cid = '${users[0]}-${users[1]}';
       users.forEach((element) {
         if (element != currentUID) {
-          // this.displayName = element;
           this.displayName = data['members'][element];
         }
       });
     } else {
+      this.avatarProvider = NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUaaCmVssmaJOUN81ME-8C0PlRJuAbY_oDOA&usqp=CAU");
       this.cid = cid;
       this.displayName = displayNameList[0];
       for (var i = 1; i < displayNameList.length; i++){
         if (i == displayNameList.length - 1)
-          this.displayName += ", ${displayNameList[i]}";
+          this.displayName += " & ${displayNameList[i]}";
         else
           this.displayName += ", ${displayNameList[i]}";
       }
     }
   }
-  // void addMessage(Message message) {
-  //   for (int i = 0; i < messageList.length; i++) {
-  //     if (messageList[i].mid == message.mid) {
-  //       messageList[i] = message;
-  //       return;
-  //     }
-  //   }
-  //   messageList.add(message);
-  //   messageList.sort((a, b) => (a.sentTime.compareTo(b.sentTime)));
-  // }
 }

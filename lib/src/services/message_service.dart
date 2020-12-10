@@ -49,6 +49,44 @@ class MessageService {
     seenNewMessage(conversation, senderId, timestamp);
   }
 
+  void addLocationMessage(Conversation conversation, String senderId, String address, double latitude, double longitude){
+    var timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    var messagesRef = _firebaseService.getDatabaseReference(["messages", conversation.cid]);
+    _firebaseService.addDocumentCustomId(messagesRef, timestamp.toString(), {
+      "type": MessageType.location.index,
+      "content": address,
+      "longitude": longitude,
+      "latitude": latitude,
+      "sender": senderId,
+      "seenList": []
+    });
+
+    var conversationRef = _firebaseService.getDatabaseReference(["conversations", conversation.cid]);
+    _firebaseService.updateDocument(conversationRef, Map<String, dynamic>.from({
+      "recentMessageType": MessageType.location.index,
+      "recentMessage": address,
+      "longitude": longitude,
+      "latitude": latitude,
+      "lastTimestamp": timestamp,
+      "lastSender": senderId
+    }));
+
+    conversation.users.forEach((uid) {
+      var userConversationRef = _firebaseService.getDatabaseReference(["users/$uid/conversations/${conversation.cid}"]);
+      _firebaseService.updateDocument(userConversationRef, Map<String, dynamic>.from({
+        "recentMessageType": MessageType.location.index,
+        "recentMessage": address,
+        "longitude": longitude,
+        "latitude": latitude,
+        "lastTimestamp": timestamp,
+        "lastSender": senderId
+      }));
+    });
+
+    seenNewMessage(conversation, senderId, timestamp);
+  }
+
   void addImageMessage(Conversation conversation, String senderId, String url){
     var timestamp = DateTime.now().millisecondsSinceEpoch;
 

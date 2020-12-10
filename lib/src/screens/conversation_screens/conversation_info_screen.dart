@@ -4,8 +4,10 @@ import 'package:ChatApp/src/models/conversation/conversation.dart';
 import 'package:ChatApp/src/screens/conversation_screens/add_member_screen.dart';
 import 'package:ChatApp/src/screens/conversation_screens/decorations/decorations.dart';
 import 'package:ChatApp/src/screens/conversation_screens/report_screen.dart';
+import 'package:ChatApp/src/services/auth_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ConversationInfoScreen extends StatefulWidget {
@@ -20,6 +22,7 @@ class ConversationInfoScreen extends StatefulWidget {
 class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
   File _image;
   ImagePicker _imagePicker = ImagePicker();
+  AuthService _authService = GetIt.I.get<AuthService>();
 
   _imageFromGallery() async {
     File file = await FilePicker.getFile(type: FileType.custom, allowedExtensions: ['jpg', 'jpeg', 'png']);
@@ -158,7 +161,9 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
                       Container(
                         decoration: greyCircleDecoration(),
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+
+                          },
                           icon: Icon(
                             Icons.call,
                             color: Colors.black,
@@ -280,7 +285,7 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
                   ],
                 ),
               ),
-              FlatButton(
+              widget.conversation.users.length == 2 ? Container() : FlatButton(
                 onPressed: () {},
                 padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                 child: Row(

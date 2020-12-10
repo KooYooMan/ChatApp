@@ -1,7 +1,12 @@
+import 'package:ChatApp/src/models/conversation/conversation.dart';
 import 'package:ChatApp/src/models/user/user.dart';
+import 'package:ChatApp/src/screens/conversation_screens/conversation_screen.dart';
 import 'package:ChatApp/src/screens/fake_data/fake_database.dart';
+import 'package:ChatApp/src/services/auth_service.dart';
+import 'package:ChatApp/src/services/message_service.dart';
 import 'package:flutter/material.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:get_it/get_it.dart';
 
 class OnlineList extends StatefulWidget {
   @override
@@ -9,10 +14,23 @@ class OnlineList extends StatefulWidget {
 }
 
 class _OnlineListState extends State<OnlineList> {
-  List<User> onlineList = fakeDatabase.getFavorites();
+  AuthService _authService = GetIt.I.get<AuthService>();
+  MessageService _messageService = GetIt.I.get<MessageService>();
+  List<User> onlineList = new List<User>();
+  bool _loading = true;
 
   @override
   Widget build(BuildContext context) {
+    _authService.getAllUsers().then((result){
+      onlineList = [];
+      result.forEach((element) {
+        if (element.isOnline)
+          onlineList.add(element);
+      });
+    });
+
+    print(onlineList.length);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -22,12 +40,19 @@ class _OnlineListState extends State<OnlineList> {
           itemCount: onlineList.length,
           itemBuilder: (BuildContext context, int index) {
             return FlatButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => Text("Hello World!"),
-                ),
-              ),
+              onPressed: () async {
+                Conversation newConversation = await _messageService.addConversation(await _authService.getCurrentDartUser(), onlineList[index]);
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => Material(
+                    child: Scaffold(
+                        resizeToAvoidBottomInset: false,
+                        body: Container(
+                          child: ConversationScreen(newConversation),
+                        )
+                    ),
+                  ),
+                ));
+              },
               child: Container(
                 margin: EdgeInsets.only(top: 5.0, bottom: 5.0, right: 10.0),
                 padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 10.0),
@@ -36,9 +61,31 @@ class _OnlineListState extends State<OnlineList> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        CircleAvatar(
-                          radius: 25.0,
-                          backgroundImage: onlineList[index].avatarProvider,
+                        Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 25.0,
+                              backgroundImage: onlineList[index].avatarProvider,
+                            ),
+                            Positioned(
+                                right: -3.0,
+                                bottom: -3.0,
+                                child: new DotsIndicator(
+                                  dotsCount: 1,
+                                  position: 0,
+                                  decorator: DotsDecorator(
+                                    activeColor: Colors
+                                        .lightBlueAccent,
+                                    shape: const Border(),
+                                    activeShape:
+                                    RoundedRectangleBorder(
+                                        borderRadius:
+                                        BorderRadius
+                                            .circular(
+                                            5.0)),
+                                  ),
+                                ))
+                          ]
                         ),
                         SizedBox(width: 10.0),
                         Column(
