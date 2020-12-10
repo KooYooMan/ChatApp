@@ -3,6 +3,7 @@ import 'package:ChatApp/src/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:toast/toast.dart';
 import 'helpers/helpers.dart';
 import 'widgets/input_fields.dart';
 import 'widgets/buttons.dart';
@@ -25,6 +26,7 @@ class _SignInScreenState extends State<SignInScreen> {
   String _email;
   String _password;
   bool _keyboardVisible = false;
+  bool _isLogging = false;
   void initState() {
     print("signInScreen");
     super.initState();
@@ -109,14 +111,31 @@ class _SignInScreenState extends State<SignInScreen> {
         GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () async {
-            String signInResult = await _signIn();
-            if (signInResult != "-1") {
+            setState(() {
+              _isLogging = true;
+            });
+            String signInResult = "-1";
+            bool logError = false;
+            try {
+              signInResult = await _signIn();
+            } catch (e){
+              logError = true;
+              print(e);
+            } finally {
+              setState(() {
+                _isLogging = false;
+              });
+            }
+            print(_isLogging.toString());
+            if (signInResult != "-1" && logError == false) {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (_) => MainScreen(),
                 ),
               );
+            } else {
+              Toast.show("Username or password is incorrect", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
             }
           },
           child: Container(
@@ -144,9 +163,10 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(_isLogging.toString());
     return SafeArea(
       child: Scaffold(
-        body: Column(
+        body: (_isLogging == false) ? Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             _buildForm(),
@@ -156,7 +176,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     child: _buildButtons())
                 : Container(),
           ],
-        ),
+        ) : Center(child: CircularProgressIndicator(),),
       ),
     );
   }

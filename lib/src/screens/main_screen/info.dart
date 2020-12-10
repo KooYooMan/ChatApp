@@ -37,17 +37,37 @@ class Info extends StatelessWidget {
               iconSize: 30.0,
               color: Colors.black,
               onPressed: () {
-                _authService.signOut();
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => Material(
-                    child: Scaffold(
-                      resizeToAvoidBottomInset: false,
-                      body: Container(
-                        child: AuthScreen()
+                showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: Text("Log Out"),
+                    content: Text("Do you want to log out?"),
+                    actions: [
+                      FlatButton(
+                        onPressed: () async {
+                          _authService.signOut();
+                          Navigator.pushReplacement(context, MaterialPageRoute(
+                            builder: (_) => Material(
+                              child: Scaffold(
+                                resizeToAvoidBottomInset: false,
+                                body: Container(
+                                  child: AuthScreen()
+                                )
+                              ),
+                            ),
+                          ),);
+                        },
+                        child: Text("Yes"),
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                        child: Text("No"),
                       )
-                    ),
+                    ],
                   ),
-                ),);
+                );
               },
             ),
           ],

@@ -57,13 +57,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _username = usernameTextEditingController.text;
       _email = emailTextEditingController.text;
       _password = passwordTextEditingController.text;
-      await _authService
-          .signUp(_email, _password, _username)
-          .catchError((error) {
-        Toast.show("Sign up with error $error", context,
+
+
+      try {
+        await _authService.signUp(_email, _password, _username);
+      } catch(e) {
+        Toast.show("The email is already in use by another account", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
-        return Future.error(error);
-      });
+        return Future.error(e);
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+
       Toast.show("Sign up successful", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       widget.switchPage();
@@ -183,7 +190,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
+        body: (isLoading == true) ? Center(child: CircularProgressIndicator(),) : Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             _buildForm(),
