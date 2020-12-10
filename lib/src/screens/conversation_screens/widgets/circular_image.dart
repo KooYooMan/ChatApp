@@ -6,16 +6,9 @@ class CircularImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 30.0,
-      height: 30.0,
-      decoration: new BoxDecoration(
-        shape: BoxShape.circle,
-        image: new DecorationImage(
-          fit: BoxFit.fill,
-          image: imageProvider
-        )
-      )
+    return CircleAvatar(
+      backgroundImage: imageProvider,
+      radius: 20.0,
     );
   }
 }

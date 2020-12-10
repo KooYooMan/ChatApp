@@ -9,7 +9,7 @@ class NameWidget extends StatelessWidget {
       children: [
         Row(
           children: [
-            SizedBox(width: 50.0,),
+            SizedBox(width: 60.0,),
             Container(
               child: Text(
                 name,

@@ -430,7 +430,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 if (!isSentByMe) {
                   w = Row(
                     children: [
-                      SizedBox(width: 40.0),
+                      SizedBox(width: 50.0),
                       w
                     ],
                   );
@@ -464,7 +464,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
                   ],
                 );
               }
-
 
               return w;
             }
