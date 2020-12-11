@@ -28,7 +28,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool _keyboardVisible = false;
   bool _isLogging = false;
   void initState() {
-    print("signInScreen");
+    // print("signInScreen");
     super.initState();
 
     KeyboardVisibilityNotification().addNewListener(
@@ -65,7 +65,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 Container(
                   margin: EdgeInsets.only(bottom: 20, left: 20.0, right: 20.0),
                   child: Text(
-                    "Login To Continue",
+                    "Login",
                     style: TextStyle(fontSize: 27),
                   ),
                 ),
@@ -118,7 +118,7 @@ class _SignInScreenState extends State<SignInScreen> {
             bool logError = false;
             try {
               signInResult = await _signIn();
-            } catch (e){
+            } catch (e) {
               logError = true;
               print(e);
             } finally {
@@ -135,7 +135,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               );
             } else {
-              Toast.show("Username or password is incorrect", context, duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+              Toast.show("Username or password is incorrect", context,
+                  duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
             }
           },
           child: Container(
@@ -166,17 +167,21 @@ class _SignInScreenState extends State<SignInScreen> {
     print(_isLogging.toString());
     return SafeArea(
       child: Scaffold(
-        body: (_isLogging == false) ? Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            _buildForm(),
-            (_keyboardVisible == false)
-                ? Container(
-                    margin: EdgeInsets.only(bottom: 10.0),
-                    child: _buildButtons())
-                : Container(),
-          ],
-        ) : Center(child: CircularProgressIndicator(),),
+        body: (_isLogging == false)
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  _buildForm(),
+                  (_keyboardVisible == false)
+                      ? Container(
+                          margin: EdgeInsets.only(bottom: 10.0),
+                          child: _buildButtons())
+                      : Container(),
+                ],
+              )
+            : Center(
+                child: CircularProgressIndicator(),
+              ),
       ),
     );
   }

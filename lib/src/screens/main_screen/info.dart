@@ -10,19 +10,10 @@ class Info extends StatelessWidget {
   Widget build(BuildContext context) {
     // Scaffold is a layout for the major Material Components.
 
-    final features = [
-      "Email:",
-      "Password: "
-    ];
-    final contents = [
-      _authService.getCurrentUser().email,
-      "************"
-    ];
+    final features = ["Email:", "Password: "];
+    final contents = [_authService.getCurrentUser().email, "************"];
 
-    final icons = [
-      'email.png',
-      'password.png'
-    ];
+    final icons = ['email.png', 'password.png'];
 
     return Scaffold(
         appBar: AppBar(
@@ -32,43 +23,47 @@ class Info extends StatelessWidget {
           ),
           title: Text('Profile'),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.exit_to_app),
-              iconSize: 30.0,
-              color: Colors.black,
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (_) => AlertDialog(
-                    title: Text("Log Out"),
-                    content: Text("Do you want to log out?"),
-                    actions: [
-                      FlatButton(
-                        onPressed: () async {
-                          _authService.signOut();
-                          Navigator.pushReplacement(context, MaterialPageRoute(
-                            builder: (_) => Material(
-                              child: Scaffold(
-                                resizeToAvoidBottomInset: false,
-                                body: Container(
-                                  child: AuthScreen()
-                                )
-                              ),
-                            ),
-                          ),);
-                        },
-                        child: Text("Yes"),
+            Column(
+              children: [
+                IconButton(
+                  icon: Icon(Icons.exit_to_app),
+                  iconSize: 30.0,
+                  color: Colors.black,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                        title: Text("Log Out"),
+                        content: Text("Do you want to log out?"),
+                        actions: [
+                          FlatButton(
+                            onPressed: () async {
+                              _authService.signOut();
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => Material(
+                                    child: Scaffold(
+                                        resizeToAvoidBottomInset: false,
+                                        body: Container(child: AuthScreen())),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text("Yes"),
+                          ),
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.of(context, rootNavigator: true).pop();
+                            },
+                            child: Text("No"),
+                          )
+                        ],
                       ),
-                      FlatButton(
-                        onPressed: () {
-                          Navigator.of(context, rootNavigator: true).pop();
-                        },
-                        child: Text("No"),
-                      )
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),
@@ -87,7 +82,8 @@ class Info extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 60.0,
-                        backgroundImage: NetworkImage(_authService.getCurrentUser().photoURL),
+                        backgroundImage: NetworkImage(
+                            _authService.getCurrentUser().photoURL),
                       ),
                       SizedBox(height: 10.0),
                       Text(

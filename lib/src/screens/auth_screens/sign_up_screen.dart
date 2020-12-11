@@ -58,10 +58,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _email = emailTextEditingController.text;
       _password = passwordTextEditingController.text;
 
-
       try {
         await _authService.signUp(_email, _password, _username);
-      } catch(e) {
+      } catch (e) {
         Toast.show("The email is already in use by another account", context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         return Future.error(e);
@@ -81,7 +80,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Expanded(
       child: SingleChildScrollView(
         child: Container(
-          margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 7),
+          margin: EdgeInsets.only(top: MediaQuery.of(context).size.height / 10),
           child: Form(
             key: formKeySignUp,
             child: Column(
@@ -161,7 +160,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       children: <Widget>[
         GestureDetector(
           child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 10.0),
+            // margin: EdgeInsets.symmetric(horizontal: 5.0),
             child: PrimaryButton(
               text: "Create Account",
             ),
@@ -176,7 +175,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         GestureDetector(
           onTap: widget.switchPage,
           child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 10.0),
+            // margin: EdgeInsets.symmetric(horizontal: 5.0),
             child: NeOutlineButton(
               text: "Back To Login",
             ),
@@ -190,17 +189,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: (isLoading == true) ? Center(child: CircularProgressIndicator(),) : Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            _buildForm(),
-            (_keyboardVisible == false)
-                ? Container(
-                    margin: EdgeInsets.only(bottom: 10.0),
-                    child: _buildButtons())
-                : Container(),
-          ],
-        ),
+        body: (isLoading == true)
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  _buildForm(),
+                  (_keyboardVisible == false)
+                      ? Container(
+                          margin: EdgeInsets.only(bottom: 10.0),
+                          child: _buildButtons())
+                      : Container(),
+                ],
+              ),
       ),
     );
   }

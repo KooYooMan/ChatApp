@@ -9,7 +9,6 @@ import 'package:ChatApp/src/services/firebase.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:ChatApp/src/services/storage_service.dart';
 
-
 class AuthService {
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
@@ -17,11 +16,11 @@ class AuthService {
 
   Stream<User> get onAuthStateChanged => _firebaseAuth.authStateChanges();
 
-  User getCurrentUser(){
+  User getCurrentUser() {
     return _firebaseAuth.currentUser;
   }
 
-  String getCurrentUID(){
+  String getCurrentUID() {
     if (_firebaseAuth.currentUser != null)
       return _firebaseAuth.currentUser.uid;
     else
@@ -42,64 +41,70 @@ class AuthService {
   user.User getUserByUid(String uid) {
     var query = _firebaseService.getDatabaseReference(["users", uid]);
     var member;
-    query.once().then((snapshot){
+    query.once().then((snapshot) {
       member = user.User.fromSnapshot(uid, snapshot.value);
     });
     return member;
   }
-  
+
   Future<String> getDisplayName(String uid) async {
-    var query = await _firebaseService.getDatabaseReference(["users", uid, "displayName"]);
+    var query = await _firebaseService
+        .getDatabaseReference(["users", uid, "displayName"]);
     await query.once().then((value) {
       print("name = $value");
       return value;
     });
   }
-  
+
   Future<List<user.User>> getAllUsers() async {
-    List <user.User> users = [];
-    await _firebaseService.getDatabaseReference(["users"]).once().then((snapshot){
-      Map data = snapshot.value;
-      data.forEach((key, value) {
-        users.add(user.User.fromSnapshot(key, value));
-      });
-    });
+    List<user.User> users = [];
+    // await _firebaseService.getDatabaseReference(["users"]).once().then((snapshot){
+    //   Map data = snapshot.value;
+    //   data.forEach((key, value) {
+    //     users.add(user.User.fromSnapshot(key, value));
+    //   });
+    // });
     return users;
   }
 
   Future<user.User> getCurrentDartUser() async {
     user.User result = null;
-    await _firebaseService.getDatabaseReference(["users", _firebaseAuth.currentUser.uid]).once().then((snapshot){
-      result = user.User.fromSnapshot(_firebaseAuth.currentUser.uid, snapshot.value);
-    });
+    await _firebaseService
+        .getDatabaseReference(["users", _firebaseAuth.currentUser.uid])
+        .once()
+        .then((snapshot) {
+          result = user.User.fromSnapshot(
+              _firebaseAuth.currentUser.uid, snapshot.value);
+        });
     return result;
   }
 
   String getAvatarURL(String uid) {
-    _firebaseService.getDatabaseReference(["users", uid, "photoURL"]).once().then((value) {
-      return value;
-    });
+    _firebaseService
+        .getDatabaseReference(["users", uid, "photoURL"])
+        .once()
+        .then((value) {
+          return value;
+        });
   }
 
   Future<String> signUp(String email, String password, String username) async {
     try {
       UserCredential result = await _firebaseAuth
-          .createUserWithEmailAndPassword(
-          email: email, password: password);
+          .createUserWithEmailAndPassword(email: email, password: password);
 
-      DatabaseReference users = _firebaseService.getDatabaseReference(["users"]);
-      _firebaseService.addDocumentCustomId(users, result.user.uid, {
-        "isOnline": true,
-        "displayName": username
-      });
+      DatabaseReference users =
+          _firebaseService.getDatabaseReference(["users"]);
+      _firebaseService.addDocumentCustomId(
+          users, result.user.uid, {"isOnline": true, "displayName": username});
 
       // set default avatar
-      _storageService.getDownloadURL('Anonymous-Avatar.png').then((url){
+      _storageService.getDownloadURL('Anonymous-Avatar.png').then((url) {
         getCurrentUser().updateProfile(photoURL: url, displayName: username);
-        var ref = _firebaseService.getDatabaseReference(["users", result.user.uid]);
-        _firebaseService.updateDocument(ref, Map<String, dynamic>.from({
-          "photoURL": url
-        }));
+        var ref =
+            _firebaseService.getDatabaseReference(["users", result.user.uid]);
+        _firebaseService.updateDocument(
+            ref, Map<String, dynamic>.from({"photoURL": url}));
         getCurrentUser().reload();
       });
 
