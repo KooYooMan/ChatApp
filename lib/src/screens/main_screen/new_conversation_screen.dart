@@ -29,6 +29,18 @@ class _NewConversationScreenState extends State<NewConversationScreen> {
   void initState() {
     super.initState();
     _controller = TextEditingController();
+    _authService.getAllUsers().then((result) {
+      favorites = result;
+      userList.clear();
+      userList.addAll(favorites);
+
+      _authService.getCurrentDartUser().then((user) {
+        currentUser = user;
+        setState(() {
+          _loading = false;
+        });
+      });
+    });
   }
 
   // void dispose() {
@@ -65,19 +77,6 @@ class _NewConversationScreenState extends State<NewConversationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _authService.getAllUsers().then((result) {
-      favorites = result;
-      userList.clear();
-      userList.addAll(favorites);
-
-      _authService.getCurrentDartUser().then((user) {
-        currentUser = user;
-        setState(() {
-          _loading = false;
-        });
-      });
-    });
-
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(

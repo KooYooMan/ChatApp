@@ -65,12 +65,12 @@ class AuthService {
 
   Future<List<user.User>> getAllUsers() async {
     List<user.User> users = [];
-    // await _firebaseService.getDatabaseReference(["users"]).once().then((snapshot){
-    //   Map data = snapshot.value;
-    //   data.forEach((key, value) {
-    //     users.add(user.User.fromSnapshot(key, value));
-    //   });
-    // });
+    await _firebaseService.getDatabaseReference(["users"]).once().then((snapshot){
+      Map data = snapshot.value;
+      data.forEach((key, value) {
+        users.add(user.User.fromSnapshot(key, value));
+      });
+    });
     return users;
   }
 

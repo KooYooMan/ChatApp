@@ -29,6 +29,21 @@ class _NewContactScreenState extends State<NewContactScreen> {
   void initState() {
     super.initState();
     _controller = TextEditingController();
+    _authService.getAllUsers().then((result) {
+      print("result = $result");
+      favorites = result;
+      userList.clear();
+      userList.addAll(favorites);
+
+      _authService.getCurrentDartUser().then((user) {
+        currentUser = user;
+        if (mounted) {
+          setState(() {
+            _loading = false;
+          });
+        }
+      });
+    });
   }
 
   // void dispose() {
@@ -60,21 +75,6 @@ class _NewContactScreenState extends State<NewContactScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _authService.getAllUsers().then((result) {
-      favorites = result;
-      userList.clear();
-      userList.addAll(favorites);
-
-      _authService.getCurrentDartUser().then((user) {
-        currentUser = user;
-        if (mounted) {
-          setState(() {
-            _loading = false;
-          });
-        }
-      });
-    });
-
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
