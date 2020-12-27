@@ -4,6 +4,7 @@ import 'package:ChatApp/src/models/message/document_message.dart';
 import 'package:ChatApp/src/models/message/location_message.dart';
 import 'package:ChatApp/src/models/message/text_message.dart';
 import 'package:ChatApp/src/screens/conversation_screens/call_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -76,7 +77,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
         });
       }
     );
+
+    _authService.changeUserChattingWith(widget.conversation.cid);
   }
+
+  void deactivate() {
+    super.deactivate();
+    _authService.changeUserChattingWith(null);
+  }
+
   //event function
   _imageFromGallery() async {
     File file = await FilePicker.getFile(type: FileType.custom, allowedExtensions: ['jpg', 'jpeg', 'png']);

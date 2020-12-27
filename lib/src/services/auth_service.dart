@@ -27,6 +27,13 @@ class AuthService {
       return null;
   }
 
+  void changeUserChattingWith(String cid){
+    var ref = _firebaseService.getDatabaseReference(["users", getCurrentUID()]);
+    _firebaseService.updateDocument(ref, Map<String, dynamic>.from({
+      "chattingWith": cid
+    }));
+  }
+
   Future<String> signIn(String email, String password) async {
     try {
       UserCredential result = await _firebaseAuth.signInWithEmailAndPassword(

@@ -27,7 +27,7 @@ class _MainScreenState extends State<MainScreen> {
   FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging();
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+    new FlutterLocalNotificationsPlugin();
 
   int _idScreen = 0;
   void _changeScreen(int newId) {
@@ -53,14 +53,10 @@ class _MainScreenState extends State<MainScreen> {
 
     firebaseMessaging.getToken().then((token) {
       print('token: $token');
-      var ref =
-          _firebaseService.getDatabaseReference(["users", currentUser.uid]);
-      _firebaseService.updateDocument(
-          ref, Map<String, dynamic>.from({'pushToken': token}));
-      // FirebaseFirestore.instance
-      //     .collection('users')
-      //     .doc(currentUserId)
-      //     .update({'pushToken': token});
+      var ref = _firebaseService.getDatabaseReference(["users", currentUser.uid]);
+      _firebaseService.updateDocument(ref, Map<String, dynamic>.from({
+        'pushToken': token
+      }));
     }).catchError((err) {
       print('error = ${err.message.toString()}');
     });
@@ -101,9 +97,11 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     currentUser = _authService.getCurrentUser();
     var ref = _firebaseService.getDatabaseReference(["users", currentUser.uid]);
-    ref.update({"isOnline": true});
-    // registerNotification();
-    // configLocalNotification();
+    ref.update({
+      "isOnline": true
+    });
+    registerNotification();
+    configLocalNotification();
   }
 
   @override
