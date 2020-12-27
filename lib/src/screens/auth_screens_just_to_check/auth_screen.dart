@@ -1,5 +1,5 @@
-import 'package:ChatApp/src/screens/auth_screens/sign_in_screen.dart';
-import 'package:ChatApp/src/screens/auth_screens/sign_up_screen.dart';
+import 'package:ChatApp/src/screens/auth_screens_just_to_check/sign_in_screen.dart';
+import 'package:ChatApp/src/screens/auth_screens_just_to_check/sign_up_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
@@ -16,7 +16,6 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-
   Widget _authWidget = GetStartedScreen();
   Widget _signUpScreen;
   Widget _signInScreen;
@@ -48,11 +47,16 @@ class _AuthScreenState extends State<AuthScreen> {
     );
     _authWidget = _getStartedScreen;
   }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 300),
-      transitionBuilder: (Widget child, Animation<double> animation) => ScaleTransition(scale: animation, child: child,),
+      transitionBuilder: (Widget child, Animation<double> animation) =>
+          ScaleTransition(
+        scale: animation,
+        child: child,
+      ),
       child: _authWidget,
     );
   }

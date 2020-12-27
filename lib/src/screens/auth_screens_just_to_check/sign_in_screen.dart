@@ -46,6 +46,8 @@ class _SignInScreenState extends State<SignInScreen> {
     if (formKeySignIn.currentState.validate()) {
       _email = emailTextEditingController.text;
       _password = passwordTextEditingController.text;
+      print(_email);
+      print(_password);
       var uid = await _authService.signIn(_email, _password);
       return uid;
     }

@@ -1,4 +1,4 @@
-import 'package:ChatApp/src/screens/auth_screens/auth_screen.dart';
+import 'package:ChatApp/src/screens/auth_screens/main.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:ChatApp/src/screens/main_screen/main_screen.dart';
@@ -11,7 +11,8 @@ import 'package:ChatApp/src/services/storage_service.dart';
 import 'package:ChatApp/src/services/call_service.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:google_map_location_picker/google_map_location_picker.dart';
-import 'package:google_map_location_picker/generated/l10n.dart' as location_picker;
+import 'package:google_map_location_picker/generated/l10n.dart'
+    as location_picker;
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 GetIt locator = GetIt.instance;
@@ -61,15 +62,13 @@ class MyApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       debugShowCheckedModeBanner: false,
-      home: (uid == null) ?
-      Material(
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: Container(
-            child: AuthScreen()
-          )
-        ),
-      ) : MainScreen(),
+      home: (uid == null)
+          ? Material(
+              child: Scaffold(
+                  resizeToAvoidBottomInset: false,
+                  body: Container(child: AuthScreen())),
+            )
+          : MainScreen(),
     );
   }
 }
