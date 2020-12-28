@@ -27,6 +27,26 @@ class Conversation {
   //   this.isPrivate = isPrivate;
   // }
 
+  Future<void> loadAvatar() async {
+    AuthService authService = GetIt.I.get<AuthService>();
+    if (this.users.length == 1) {
+      String url = await authService.getAvatarURL(this.users[0]);
+      this.avatarProvider = NetworkImage(url);
+    }
+    if (this.users.length == 2) {
+      users.forEach((element) async {
+        if (element != authService.getCurrentUID()) {
+          authService.getAvatarURL(element).then((url) {
+            avatarProvider = NetworkImage(url);
+          });
+        }
+      });
+    }
+    if (this.users.length > 2 ) {
+      this.avatarProvider = NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUaaCmVssmaJOUN81ME-8C0PlRJuAbY_oDOA&usqp=CAU");
+    }
+  }
+
   Conversation.fromSnapshot(String cid, Map data) {
     AuthService authService = GetIt.I.get<AuthService>();
 
@@ -78,28 +98,24 @@ class Conversation {
       default:
         break;
     }
-
+    this.avatarProvider = NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyEQc0W8lhz-z8b9db7uxEhKtBsnVmQbMIbg&usqp=CAU");
     this.lastTimestamp = data['lastTimestamp'];
     List<String> displayNameList = [];
+    this.members = data['members'];
     data['members'].forEach((key, value) {
       displayNameList.add(value);
       members[key] = value;
       users.add(key);
     });
     if (users.length == 2) {
-      if (users[0].compareTo(users[1]) > 0) {
-        String tmp = users[0];
-        users[0] = users[1];
-        users[1] = tmp;
-      }
-      this.cid = '${users[0]}-${users[1]}';
+      this.cid = cid;
       users.forEach((element) {
         if (element != currentUID) {
           this.displayName = data['members'][element];
         }
       });
     } else {
-      this.avatarProvider = NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUaaCmVssmaJOUN81ME-8C0PlRJuAbY_oDOA&usqp=CAU");
+      // this.avatarProvider = NetworkImage("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUaaCmVssmaJOUN81ME-8C0PlRJuAbY_oDOA&usqp=CAU");
       this.cid = cid;
       this.displayName = displayNameList[0];
       for (var i = 1; i < displayNameList.length; i++){
