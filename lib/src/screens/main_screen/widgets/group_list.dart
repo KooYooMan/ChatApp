@@ -13,14 +13,14 @@ import 'package:ChatApp/src/screens/fake_data/fake_database.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ChatApp/src/services/message_service.dart';
 
-class RecentChats extends StatefulWidget {
+class GroupList extends StatefulWidget {
   final String uid;
-  RecentChats(this.uid);
+  GroupList(this.uid);
   @override
-  _RecentChatsState createState() => _RecentChatsState();
+  _GroupListState createState() => _GroupListState();
 }
 
-class _RecentChatsState extends State<RecentChats> {
+class _GroupListState extends State<GroupList> {
   MessageService _messageService = GetIt.I.get<MessageService>();
   FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
   AuthService _authService = GetIt.I.get<AuthService>();
@@ -36,19 +36,7 @@ class _RecentChatsState extends State<RecentChats> {
 
   @override
   Widget build(BuildContext context) {
-    DatabaseReference query = _firebaseService.getDatabaseReference(["users/${widget.uid}/conversations"]);
-    query.once().then((snapshot) {
-      var data = snapshot.value;
-      data.forEach((key, value) {
-        value['members'].forEach((mKey, mValue) async {
-          if (!avatar.containsKey(mKey)) {
-            String url = await _authService.getAvatarURL(mKey);
-            avatar[mKey] = NetworkImage(url);
-          }
-        });
-      });
-    });
-    return Expanded(
+    return Container(
         child: Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -57,10 +45,9 @@ class _RecentChatsState extends State<RecentChats> {
                 child: Container(
                     child: StreamBuilder(
                         stream:
-                            _messageService.getRecentConversations(widget.uid),
+                        _messageService.getRecentConversations(widget.uid),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
-                            print("Has data");
                             Map data = snapshot.data.snapshot.value;
 
                             if (data == null) return Container();
@@ -69,8 +56,9 @@ class _RecentChatsState extends State<RecentChats> {
                             data.forEach((key, value) {
                               var conversationInstance = Conversation.fromSnapshot(key, value);
                               conversationInstance.loadAvatar();
-                              _conversations
-                                  .add(conversationInstance);
+                              if (conversationInstance.users.length > 2)
+                                _conversations
+                                    .add(conversationInstance);
                             });
 
                             // _conversations.forEach((element) {
@@ -81,13 +69,13 @@ class _RecentChatsState extends State<RecentChats> {
 
 
                             _conversations.sort(
-                                (Conversation a, Conversation b) =>
-                                    (b.lastTimestamp - a.lastTimestamp));
+                                    (Conversation a, Conversation b) =>
+                                (b.lastTimestamp - a.lastTimestamp));
                             return ListView.builder(
                               itemCount: _conversations.length,
                               itemBuilder: (BuildContext context, int index) {
                                 Conversation conversation =
-                                    _conversations[index];
+                                _conversations[index];
                                 recentMessage = conversation.recentMessage;
                                 var conversationAvatar;
                                 if (conversation.users.length == 1){
@@ -104,11 +92,11 @@ class _RecentChatsState extends State<RecentChats> {
                                 }
 
                                 String recentMessageString =
-                                    recentMessage.toString();
+                                recentMessage.toString();
                                 String shortMessage = recentMessageString;
                                 for (int i = 0;
-                                    i < recentMessageString.length;
-                                    i++) {
+                                i < recentMessageString.length;
+                                i++) {
                                   if (recentMessageString[i] == '\n') {
                                     shortMessage =
                                         recentMessageString.substring(0, i);
@@ -137,7 +125,7 @@ class _RecentChatsState extends State<RecentChats> {
                                         horizontal: 10.0, vertical: 10.0),
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
                                         Row(
                                           children: <Widget>[
@@ -170,12 +158,12 @@ class _RecentChatsState extends State<RecentChats> {
                                             SizedBox(width: 10.0),
                                             Column(
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                               children: <Widget>[
                                                 Container(
                                                   width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
+                                                      .size
+                                                      .width *
                                                       0.45,
                                                   child: Text(
                                                       conversation.displayName,
@@ -188,14 +176,14 @@ class _RecentChatsState extends State<RecentChats> {
                                                 SizedBox(height: 5.0),
                                                 Container(
                                                   width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
+                                                      .size
+                                                      .width *
                                                       0.45,
                                                   child: Text(shortMessage,
                                                       style: TextStyle(
-                                                        color: Colors.blueGrey,
-                                                        fontSize: 15.0,
-                                                        fontWeight: FontWeight.normal
+                                                          color: Colors.blueGrey,
+                                                          fontSize: 15.0,
+                                                          fontWeight: FontWeight.normal
                                                       ),
                                                       overflow: TextOverflow
                                                           .ellipsis),

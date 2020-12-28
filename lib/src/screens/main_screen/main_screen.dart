@@ -4,6 +4,7 @@ import 'package:ChatApp/src/screens/main_screen/new_contact_screen.dart';
 import 'package:ChatApp/src/screens/main_screen/new_conversation_screen.dart';
 import 'package:ChatApp/src/screens/main_screen/info.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/category_select.dart';
+import 'package:ChatApp/src/screens/main_screen/widgets/group_list.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/recently_contacts.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/online_list.dart';
 import 'package:ChatApp/src/screens/main_screen/widgets/recently_chat.dart';
@@ -41,7 +42,10 @@ class _MainScreenState extends State<MainScreen> {
 
     firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) {
       print('onMessage: $message');
-      showNotification(message['notification']);
+      print('data = ${message['data']['receiver']}');
+      if (message['data']['receiver'] == _authService.getCurrentUID()) {
+        showNotification(message['notification']);
+      }
       return;
     }, onResume: (Map<String, dynamic> message) {
       print('onResume: $message');
@@ -85,7 +89,8 @@ class _MainScreenState extends State<MainScreen> {
     var platformChannelSpecifics =
         new NotificationDetails(android: androidPlatformChannelSpecifics);
 
-    print(message);
+    var serializedMessage = json.encode(message);
+    print(serializedMessage);
 
     await flutterLocalNotificationsPlugin.show(0, message['title'].toString(),
         message['body'].toString(), platformChannelSpecifics,
@@ -218,7 +223,20 @@ class _MainScreenState extends State<MainScreen> {
                   )
                 ],
               ),
-              Container(),
+              Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(30.0),
+                        topRight: Radius.circular(30.0),
+                      ),
+                    ),
+                    child: GroupList(currentUser.uid),
+                  )
+                ],
+              ),
             ],
           )),
         ],

@@ -61,6 +61,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   File _file;
   String _filePath;
   List<File> _files;
+  Map avatar = new Map();
   ImagePicker _imagePicker = ImagePicker();
   bool _keyboardVisible = false;
   bool _showEmojiPicker = false;
@@ -79,6 +80,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
     );
 
     _authService.changeUserChattingWith(widget.conversation.cid);
+    widget.conversation.users.forEach((element) async {
+      avatar[element] = NetworkImage(await _authService.getAvatarURL(element));
+    });
   }
 
   void deactivate() {
@@ -162,14 +166,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
   }
   Future<void> _onJoin() async {
     await _handleCameraAndMic();
-    //TODO: add an entry agoraID, avatar. => get user avatar when disable video.
-    //TODO: maintain map<agoraID, bool> camera, => camera status of agoraID.
 
     await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => CallScreen(channelName: widget.conversation.cid,))
     );
   }
+
   Widget _buildAppBar() {
     return AppBar(
       leading: IconButton(
@@ -209,7 +212,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => ConversationInfoScreen(_authService.getCurrentUID(), widget.conversation) // TODO: Check if right person
+                builder: (_) => ConversationInfoScreen(_authService.getCurrentUID(), widget.conversation)
               )
             );
           }
@@ -411,7 +414,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
                     child: Text('Video call'),
                   ),
                 ],
-                child: CircularImage(NetworkImage(_authService.getCurrentUser().photoURL)),  // TODO : get exact image
+                child: CircularImage(avatar[list[currIdx].sender]),  // TODO : get exact image
               );
               if (((nextIdx < length && list[nextIdx].sender != currMess.sender) || nextIdx >= length)) {
                 if (isSentByMe) {

@@ -47,5 +47,7 @@ class FirebaseService {
         .catchError((error) => print("$error"));
   }
 
-  // Future<void> deleteDocument(String collectionName)
+  Future<void> deleteDocument(DatabaseReference databaseReference){
+    databaseReference.remove();
+  }
 }

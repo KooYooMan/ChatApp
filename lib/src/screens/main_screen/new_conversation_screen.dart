@@ -103,7 +103,8 @@ class _NewConversationScreenState extends State<NewConversationScreen> {
                     List <User> members = [];
                     members.addAll(curList);
                     members.add(currentUser);
-                    Conversation newConversation = await _messageService.addGroupConversation(members);
+                    Conversation newConversation = await _messageService.addGroupConversation(currentUser, members);
+                    await newConversation.loadAvatar();
                     print(newConversation.users);
                     print(newConversation.displayName);
                     Navigator.push(context, MaterialPageRoute(

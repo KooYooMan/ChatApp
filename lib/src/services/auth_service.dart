@@ -86,13 +86,15 @@ class AuthService {
     return result;
   }
 
-  String getAvatarURL(String uid) {
-    _firebaseService
+  Future<String> getAvatarURL(String uid) async {
+    String result = null;
+    await _firebaseService
         .getDatabaseReference(["users", uid, "photoURL"])
         .once()
         .then((value) {
-          return value;
+          result = value.value;
         });
+    return result;
   }
 
   Future<String> signUp(String email, String password, String username) async {

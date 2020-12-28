@@ -5,10 +5,14 @@ import 'package:ChatApp/src/screens/conversation_screens/add_member_screen.dart'
 import 'package:ChatApp/src/screens/conversation_screens/decorations/decorations.dart';
 import 'package:ChatApp/src/screens/conversation_screens/report_screen.dart';
 import 'package:ChatApp/src/services/auth_service.dart';
+import 'package:ChatApp/src/services/message_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'call_screen.dart';
 
 class ConversationInfoScreen extends StatefulWidget {
   ConversationInfoScreen(this.uid, this.conversation);
@@ -23,6 +27,7 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
   File _image;
   ImagePicker _imagePicker = ImagePicker();
   AuthService _authService = GetIt.I.get<AuthService>();
+  MessageService _messageService = GetIt.I.get<MessageService>();
 
   _imageFromGallery() async {
     File file = await FilePicker.getFile(type: FileType.custom, allowedExtensions: ['jpg', 'jpeg', 'png']);
@@ -114,6 +119,18 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
     );
   }
 
+  Future<void> _handleCameraAndMic() async {
+    await [Permission.camera, Permission.microphone].request();
+  }
+  Future<void> _onJoin() async {
+    await _handleCameraAndMic();
+
+    await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CallScreen(channelName: widget.conversation.cid,))
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     bool test = true;
@@ -161,9 +178,7 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
                       Container(
                         decoration: greyCircleDecoration(),
                         child: IconButton(
-                          onPressed: () {
-
-                          },
+                          onPressed: () => _onJoin(),
                           icon: Icon(
                             Icons.call,
                             color: Colors.black,
@@ -180,7 +195,7 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
                       Container(
                         decoration: greyCircleDecoration(),
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () => _onJoin(),
                           icon: Icon(
                             Icons.video_call,
                             color: Colors.black,
@@ -191,23 +206,23 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
                       Text("Video"),
                     ],
                   ),
-                  SizedBox(width: 30.0,),
-                  Column(
-                    children: [
-                      Container(
-                        decoration: greyCircleDecoration(),
-                        child: IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.notifications,
-                            color: Colors.black,
-                            size: 20.0,
-                          ),
-                        ),
-                      ),
-                      Text("On"),
-                    ],
-                  ),
+                  // SizedBox(width: 30.0,),
+                  // Column(
+                  //   children: [
+                  //     Container(
+                  //       decoration: greyCircleDecoration(),
+                  //       child: IconButton(
+                  //         onPressed: () {},
+                  //         icon: Icon(
+                  //           Icons.notifications,
+                  //           color: Colors.black,
+                  //           size: 20.0,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     Text("On"),
+                  //   ],
+                  // ),
                   (widget.conversation.isPrivate) ? SizedBox(width: 30.0,) : Container(),
                   (widget.conversation.isPrivate) ? Column(
                     children: [
@@ -233,15 +248,63 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
                 ],
               ),
               SizedBox(height: 20.0,),
+              // FlatButton(
+              //   onPressed: () {
+              //
+              //   },
+              //   padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+              //   child: Row(
+              //     children: [
+              //       Text(
+              //         "View videos and images",
+              //         style: TextStyle(
+              //           fontSize: 15.0,
+              //           fontWeight: FontWeight.normal,
+              //         ),
+              //       ),
+              //       Spacer(),
+              //       Container(
+              //         decoration: greyCircleDecoration(),
+              //         padding: EdgeInsets.all(5.0),
+              //         child: Icon(
+              //           Icons.image,
+              //           size: 20.0,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               FlatButton(
                 onPressed: () {
-
+                  showDialog(
+                      context: context,
+                      builder: (_) => AlertDialog(
+                    title: Text("Hide this conversation"),
+                    content: Text("Do you want to hide this conversation?"),
+                    actions: [
+                      FlatButton(
+                        onPressed: () async {
+                          _messageService.deleteConversation(widget.conversation.cid);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        child: Text("Yes"),
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context, rootNavigator: true).pop();
+                        },
+                        child: Text("No"),
+                      )
+                    ],
+                  ));
                 },
                 padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                 child: Row(
                   children: [
                     Text(
-                      "View videos and images",
+                      "Hide this conversation",
                       style: TextStyle(
                         fontSize: 15.0,
                         fontWeight: FontWeight.normal,
@@ -252,57 +315,7 @@ class _ConversationInfoScreenState extends State<ConversationInfoScreen> {
                       decoration: greyCircleDecoration(),
                       padding: EdgeInsets.all(5.0),
                       child: Icon(
-                        Icons.image,
-                        size: 20.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              FlatButton(
-                onPressed: () {
-
-                },
-                padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                child: Row(
-                  children: [
-                    Text(
-                      "Search in conversation",
-                      style: TextStyle(
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      decoration: greyCircleDecoration(),
-                      padding: EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.search,
-                        size: 20.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              widget.conversation.users.length == 2 ? Container() : FlatButton(
-                onPressed: () {},
-                padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                child: Row(
-                  children: [
-                    Text(
-                      "Leave conversation",
-                      style: TextStyle(
-                        fontSize: 15.0,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                    Spacer(),
-                    Container(
-                      decoration: greyCircleDecoration(),
-                      padding: EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.exit_to_app,
+                        Icons.delete,
                         size: 20.0,
                       ),
                     ),

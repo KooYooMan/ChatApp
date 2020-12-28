@@ -124,7 +124,7 @@ class _CallScreenState extends State<CallScreen> {
       list.add(RtcLocalView.SurfaceView());
     else
       list.add(_buildReplacementWidget(
-          NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'),
+          NetworkImage('https://www.kindpng.com/picc/m/590-5908197_png-file-svg-free-camera-off-icon-transparent.png'),
           'Off Camera'
       ));
     // list.add();
@@ -134,7 +134,7 @@ class _CallScreenState extends State<CallScreen> {
         list.add(RtcRemoteView.SurfaceView(uid: uid));
       else
         list.add(_buildReplacementWidget(
-            NetworkImage('https://flutter.github.io/assets-for-api-docs/assets/widgets/owl-2.jpg'),
+            NetworkImage('https://www.kindpng.com/picc/m/590-5908197_png-file-svg-free-camera-off-icon-transparent.png'),
             'Off Camera'
         ));
     });

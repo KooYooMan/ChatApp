@@ -42,6 +42,7 @@ class _OnlineListState extends State<OnlineList> {
             return FlatButton(
               onPressed: () async {
                 Conversation newConversation = await _messageService.addConversation(await _authService.getCurrentDartUser(), onlineList[index]);
+                newConversation.loadAvatar();
                 Navigator.push(context, MaterialPageRoute(
                   builder: (_) => Material(
                     child: Scaffold(

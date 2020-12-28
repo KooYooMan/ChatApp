@@ -117,6 +117,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
                         padding: EdgeInsets.symmetric(vertical: 10.0),
                         onPressed: () async {
                           Conversation newConversation = await _messageService.addConversation(currentUser, renderList[index]);
+                          await newConversation.loadAvatar();
                           Navigator.push(context, MaterialPageRoute(
                             builder: (_) => Material(
                               child: Scaffold(
